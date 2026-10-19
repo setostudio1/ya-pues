@@ -1,27 +1,5 @@
-import { StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Stack } from 'expo-router';
 
-import { theme } from '../src/constants/theme';
-
-export default function Index() {
-  return (
-    <SafeAreaView style={styles.screen}>
-      <View style={styles.content}>
-        {/* COMPONENTS */}
-      </View>
-    </SafeAreaView>
-  );
+export default function RootLayout() {
+  return <Stack />;
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-
-  content: {
-    flex: 1,
-    padding: theme.spacing.xl,
-    gap: theme.spacing.lg,
-  },
-});
