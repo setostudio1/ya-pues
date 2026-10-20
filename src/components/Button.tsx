@@ -1,4 +1,5 @@
 import { Pressable, StyleSheet, Text } from 'react-native';
+
 import { theme } from '../constants/theme';
 
 type Props = {
@@ -7,7 +8,7 @@ type Props = {
 };
 
 export default function Button({ label, onPress }: Props) {
-  return (
+  return(
     <Pressable
       onPress={onPress}
       style={({ pressed }) => [
@@ -38,6 +39,5 @@ const styles = StyleSheet.create({
     fontSize: theme.text.body,
     fontWeight: 'bold',
     color: theme.colors.card,
-    fontFamily: 'Rethink Sans',
   },
 });
