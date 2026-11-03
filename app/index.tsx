@@ -1,17 +1,26 @@
-import { Text, View, StyleSheet } from "react-native";
+import { StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { theme } from '../src/constants/theme';
 
 export default function Index() {
   return (
-    <View style={styles.container}>
-      <Text>Edit src/app/index.tsx to edit this screen.</Text>
-    </View>
+    <SafeAreaView style={styles.screen}>
+      <View style={styles.content}>
+        {/* COMPONENTS */}
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: theme.colors.background,
+  },
+  content: {
+    flex: 1,
+    padding: theme.spacing.xl,
+    gap: theme.spacing.lg,
   },
 });
