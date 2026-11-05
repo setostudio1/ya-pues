@@ -2,12 +2,13 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
 import { colors } from '../constants/colors';
+import { TaskDraftProvider } from '../context/TaskDraftContext';
 
 export const unstable_settings = { initialRouteName: '(tabs)' };
 
 export default function RootLayout() {
   return (
-    <>
+    <TaskDraftProvider>
       <StatusBar style="dark" />
       <Stack screenOptions={{
         headerTintColor: colors.primary,
@@ -28,6 +29,6 @@ export default function RootLayout() {
         <Stack.Screen name="notification-3" options={{ title: 'Plazo próximo' }} />
         <Stack.Screen name="notification-4" options={{ title: 'Aviso urgente' }} />
       </Stack>
-    </>
+    </TaskDraftProvider>
   );
 }

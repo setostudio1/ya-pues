@@ -1,56 +1,85 @@
-# Welcome to your Expo app 👋
+﻿# Ya pues
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Expo SDK 57 / React Native app using Expo Router. Routes live in `src/app/`.
 
-## Get started
+## Run
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```sh
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Checkpoints 3 and 4
 
-### Other setup steps
+The app opens on Inicio. Inicio and Racha are the two tab buttons; the raised
+yellow + opens `/set-date` outside the tabs. The tab bar reserves its own height
+and bottom safe area so it does not cover scrollable content. It uses the
+installed Ionicons home/person/add icons and colors from `src/constants/colors.ts`.
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+| Screen | Route | Bottom bar |
+| --- | --- | --- |
+| Inicio | `/` | Yes |
+| Racha | `/streak` | Yes |
+| Tarea creada | `/task-created` | Yes, without an extra tab button |
+| Acceso | `/start-page` | No |
+| Login | `/login` | No |
+| Bienvenida | `/welcome` | No |
+| Fecha limite | `/set-date` | No |
+| Hora limite | `/set-time` | No |
+| La tarea | `/set-task` | No |
+| La evidencia | `/set-proof` | No |
+| Firma / imagen | `/sign` / `/sign?mode=image` | No |
+| Avisos 1-4 | `/notification-1` through `/notification-4` | No |
 
-## Learn more
+The creation flow is date -> time -> task -> proof -> sign -> task created -> home.
+The confirmation returns to home after 1.7 seconds, as in the prototype, and
+clears the creation stack. The timer is cancelled when leaving the confirmation.
+Login leads to welcome, which returns to home. Both signature modes share one
+route and switch with the `mode` query parameter.
 
-To learn more about developing your project with Expo, look at the following resources:
+The follow-up persistence practice adds task form inputs, AsyncStorage, completion
+records and calculated streak data. See [the storage contract and acceptance
+check](docs/storage.md). Authentication, registration, Google sign-in, image uploads,
+handwritten signature capture and scheduled notifications are not implemented.
+The four notice screens are reachable manually from Inicio; the prototype's
+ten-second demonstration timer is not a scheduled device notification.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+The Figma shows the home/person/+ bar. Its navigation has a gap: the person icon
+on HOME has no direct link to STREAK, while STREAK and TASK COMPLETED show the
+same bar and TASK COMPLETED links to STREAK. The app makes both tabs available
+consistently. Figma assets were not downloaded; installed Ionicons are used.
 
-## Join the community
+## Tab layout options
 
-Join our community of developers creating universal apps.
+- `initialRouteName`: opens Inicio first.
+- `tabBar`: renders the shared bar with its central action button.
+- `headerShown`: lets each tab render its own screen title.
+- `tabBarActiveTintColor`: colors the selected tab with the primary color.
+- `tabBarInactiveTintColor`: colors other tabs with the muted color.
+- `tabBarShowLabel`: keeps the icon-only appearance of the Figma.
+- `title`: provides the screen title and accessible tab label.
+- `tabBarIcon`: receives the current color and renders the corresponding icon.
+- `href: null`: keeps confirmation out of the visible tab buttons.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Validate
+
+```sh
+npm test
+npx expo lint
+npx tsc --noEmit
+npx expo export --platform web --max-workers 1
+```
+
+`example/` is archived starter code, ignored by Git, ESLint, and TypeScript.
+
+Manual checks:
+
+1. Switch between Inicio and Racha; check the selected icon and `/streak` URL.
+2. Tap + from either tab; fill in the five steps without a bottom bar.
+3. Sign and save; verify the confirmation, return home and new task in the list.
+4. Open Acceso -> Login -> Bienvenida -> Inicio.
+5. Open all four notices and return home. Check the back button between form steps.
+6. On a small phone and with large text, scroll to the last button and confirm
+   that the bar does not cover it. Open each route directly as a deep link.
+
+Reference: [Figma](https://www.figma.com/design/nNOZmFF0M4viYBKPr4a6PX/Ya-pues?node-id=0-1).
