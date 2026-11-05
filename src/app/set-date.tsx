@@ -1,8 +1,24 @@
-import RouteScreen from '../components/RouteScreen';
+import { router } from 'expo-router';
+import { useState } from 'react';
 
-export default function SetDate() {
+import SetDate from '../components/SetDate';
+import { useTaskDraft } from '../context/TaskDraftContext';
+import { isDateKey, today } from '../utils/tasks';
+
+export default function SetDateScreen() {
+  const { draft, updateDraft } = useTaskDraft();
+  const [error, setError] = useState('');
+
+  function continueToTime() {
+    if (!isDateKey(draft.dueDate) || draft.dueDate < today()) {
+      setError('Elige una fecha de hoy en adelante. Puedes cambiar el año debajo del selector.');
+      return;
+    }
+    router.push('/set-time');
+  }
+
   return (
-    <RouteScreen title="¿Cuándo tiene que estar hecha esta tarea?" subtitle="Paso 1 · Fecha límite"
-      actions={[{ label: 'Establecer', href: '/set-time' }]} />
+    <SetDate value={draft.dueDate} error={error} onContinue={continueToTime}
+      onChange={(dueDate) => { updateDraft({ dueDate }); setError(''); }} />
   );
 }

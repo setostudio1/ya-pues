@@ -1,9 +1,20 @@
-import RouteScreen from '../components/RouteScreen';
+import { router } from 'expo-router';
+import { useState } from 'react';
+import SetTask from '../components/SetTask';
+import { useTaskDraft } from '../context/TaskDraftContext';
 
-export default function SetTask() {
+export default function SetTaskScreen() {
+  const { draft, updateDraft } = useTaskDraft();
+  const [error, setError] = useState('');
+
+  function continueToProof() {
+    if (draft.title.trim().length < 3) { setError('Escribe al menos 3 caracteres para tu tarea.'); return; }
+    router.push('/set-proof');
+  }
+
   return (
-    <RouteScreen title="¿Qué tienes que hacer?" subtitle="Paso 3 · La tarea"
-      description="Descríbelo como una acción concreta."
-      actions={[{ label: 'Continuar', href: '/set-proof' }]} />
+    <SetTask value={draft.title} intensity={draft.intensity} error={error} onContinue={continueToProof}
+      onChange={(title) => { updateDraft({ title }); setError(''); }}
+      onIntensityChange={(intensity) => updateDraft({ intensity })} />
   );
 }

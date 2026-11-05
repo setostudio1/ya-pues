@@ -7,15 +7,18 @@ type Props = ComponentProps<typeof Pressable> & {
   variant?: 'primary' | 'secondary';
 };
 
-export default function Button({ label, variant = 'primary', style, ...props }: Props) {
+export default function Button({ label, variant = 'primary', style, disabled, accessibilityState, ...props }: Props) {
   return (
     <Pressable
       accessibilityRole="button"
       {...props}
+      disabled={disabled}
+      accessibilityState={{ ...accessibilityState, disabled: !!disabled }}
       style={(state) => [
         styles.button,
         variant === 'secondary' && styles.secondary,
         state.pressed && styles.pressed,
+        disabled && styles.disabled,
         typeof style === 'function' ? style(state) : style,
       ]}
     >
@@ -45,6 +48,8 @@ const styles = StyleSheet.create({
   secondary: {
     backgroundColor: theme.colors.primarySoft,
   },
+
+  disabled: { opacity: 0.5 },
 
   secondaryLabel: {
     color: theme.colors.primary,
