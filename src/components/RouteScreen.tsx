@@ -4,6 +4,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { theme } from '../constants/theme';
+import BackButton from './BackButton';
 import Button from './Button';
 import ScreenHeader from './ScreenHeader';
 
@@ -19,7 +20,7 @@ type Props = {
   description?: string;
   actions?: Action[];
   children?: ReactNode;
-  includeTopInset?: boolean;
+  hasTabBar?: boolean;
 };
 
 export default function RouteScreen({
@@ -28,14 +29,15 @@ export default function RouteScreen({
   description,
   actions = [],
   children,
-  includeTopInset = false,
+  hasTabBar = false,
 }: Props) {
   return (
     <SafeAreaView
-      edges={includeTopInset ? ['top', 'left', 'right'] : ['left', 'right', 'bottom']}
+      edges={hasTabBar ? ['top', 'left', 'right'] : ['top', 'left', 'right', 'bottom']}
       style={styles.screen}
     >
       <ScrollView keyboardShouldPersistTaps="handled" automaticallyAdjustKeyboardInsets contentContainerStyle={styles.content}>
+        {!hasTabBar && <BackButton />}
         <ScreenHeader title={title} subtitle={subtitle} description={description} />
         <View style={styles.actions}>
           {actions.map((action, index) => (

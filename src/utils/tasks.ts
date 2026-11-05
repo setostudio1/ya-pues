@@ -1,6 +1,6 @@
 import type { Task, TaskCompletion, TaskDraft } from '../types/tasks';
 
-export const INTENSITY_LABELS = { low: 'Leve', medium: 'Media', high: 'Alta' } as const;
+export const INTENSITY_LABELS = { low: 'Leve', medium: 'Medio', high: 'Alto' } as const;
 export const PROOF_LABELS = { photo: 'Foto', video: 'Video', timelapse: 'Timelapse' } as const;
 
 export class TaskValidationError extends Error {}
@@ -31,7 +31,7 @@ export function createTaskDraft(now = new Date()): TaskDraft {
   return {
     id: createId(), title: '', dueDate: today(deadline),
     dueTime: `${String(deadline.getHours()).padStart(2, '0')}:${String(deadline.getMinutes()).padStart(2, '0')}`,
-    intensity: 'medium', proofType: 'photo', signedBy: '',
+    intensity: 'low', proofType: 'photo', signedBy: '',
     signatureMode: 'signature', signatureImageUri: '',
   };
 }

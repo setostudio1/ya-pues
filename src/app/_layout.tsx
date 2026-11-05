@@ -1,7 +1,7 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
-import { colors } from '../constants/colors';
+import { theme } from '../constants/theme';
 import { TaskDraftProvider } from '../context/TaskDraftContext';
 
 export const unstable_settings = { initialRouteName: '(tabs)' };
@@ -11,11 +11,10 @@ export default function RootLayout() {
     <TaskDraftProvider>
       <StatusBar style="dark" />
       <Stack screenOptions={{
-        headerTintColor: colors.primary,
-        headerStyle: { backgroundColor: colors.card },
-        contentStyle: { backgroundColor: colors.background },
+        headerShown: false,
+        contentStyle: { backgroundColor: theme.colors.background },
       }}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" />
         <Stack.Screen name="start-page" options={{ title: 'Acceso' }} />
         <Stack.Screen name="login" options={{ title: 'Iniciar sesión' }} />
         <Stack.Screen name="welcome" options={{ title: 'Bienvenida' }} />

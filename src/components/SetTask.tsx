@@ -1,34 +1,38 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { theme } from '../constants/theme';
 import type { Intensity } from '../types/tasks';
-import InputField from './InputField';
-import IntensityChip from './IntensityChip';
-import TaskStepScreen from './TaskStepScreen';
+import BackButton from './BackButton';
+import Button from './Button';
+import { ErrorState } from './DataState';
+import FillForm from './FillForm';
+import SetIntensity from './SetIntensity';
+import StepLabel from './StepLabel';
 
 export default function SetTask({ value, intensity, onChange, onIntensityChange, onContinue, error }: {
   value: string; intensity: Intensity; onChange: (title: string) => void;
   onIntensityChange: (intensity: Intensity) => void; onContinue: () => void; error?: string;
 }) {
   return (
-    <TaskStepScreen step="Paso 3 - La tarea" title="¿Qué tienes que hacer?" description="Descríbelo como una acción concreta"
-      buttonLabel="Continuar" onContinue={onContinue} error={error}>
-      <InputField label="Nombre de la tarea" value={value} onChangeText={onChange} multiline maxLength={120}
-        placeholder="Ej. Hacer tarea de taller con Seto" style={styles.input} />
-      <View style={styles.intensity}>
-        <Text style={styles.label}>Intensidad</Text>
-        <View accessibilityRole="radiogroup" accessibilityLabel="Intensidad" style={styles.chips}>
-          {(['low', 'medium', 'high'] as const).map((level) => <IntensityChip key={level} intensity={level}
-            selected={intensity === level} onPress={() => onIntensityChange(level)} />)}
+    <SafeAreaView style={styles.screen}>
+      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" automaticallyAdjustKeyboardInsets>
+        <View style={styles.container}>
+          <BackButton />
+          <StepLabel step="Paso 3 - La tarea" title="¿Qué tienes que hacer?"
+            description="Descríbelo como una acción concreta" />
+          <FillForm value={value} onChangeText={onChange} />
+          <SetIntensity selected={intensity} onSelect={onIntensityChange} />
+          {!!error && <ErrorState message={error} />}
+          <Button label="Continuar" onPress={onContinue} />
         </View>
-      </View>
-    </TaskStepScreen>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  input: { minHeight: 204, padding: theme.spacing.lg },
-  intensity: { marginTop: 40, gap: theme.spacing.md },
-  label: { fontSize: theme.text.caption, fontWeight: '600', color: theme.colors.text },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm },
+  screen: { flex: 1, backgroundColor: theme.colors.background },
+  scrollContent: { flexGrow: 1 },
+  container: { flex: 1, padding: theme.spacing.xl, gap: theme.spacing.lg },
 });

@@ -35,8 +35,10 @@ replaced with empty data. A failed save keeps the draft available for retry.
 - Create: `set-date`, `set-time`, `set-task` and `set-proof` edit a shared draft.
   The date route mounts the original `SetDate.tsx` / `DatePickerColumn.tsx`
   recovered from `feature/screen-set-date` (commit `de8b769`). Date and time use
-  scrolling columns, and task entry shares the same `TaskStepScreen` / `StepLabel`
-  layout. Day counts adjust to the selected month and year, including leap years.
+  scrolling columns. Task entry follows the teacher's `SafeAreaView` / `StepLabel`
+  / `FillForm` / `SetIntensity` / `Button` composition, preserving the shared draft.
+  New tasks default to Leve; the stored values remain low/medium/high.
+  Day counts adjust to the selected month and year, including leap years.
   `sign.tsx` awaits `addTask` before opening the confirmation and resetting it.
   The name acts as the typed signature. Image mode stores a user-entered image
   URL; it does not upload a file or capture a handwritten signature.
