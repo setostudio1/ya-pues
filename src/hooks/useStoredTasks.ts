@@ -1,0 +1,35 @@
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useRef, useState } from 'react';
+
+import { loadCompletions, loadTasks, type Task, type TaskCompletion } from '../storage/data';
+
+export function useStoredTasks() {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [completions, setCompletions] = useState<TaskCompletion[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const generation = useRef(0);
+
+  const reload = useCallback(async () => {
+    const current = ++generation.current;
+    setLoading(true);
+    setError('');
+    try {
+      const [savedTasks, savedCompletions] = await Promise.all([loadTasks(), loadCompletions()]);
+      if (current !== generation.current) return;
+      setTasks(savedTasks);
+      setCompletions(savedCompletions);
+    } catch {
+      if (current === generation.current) setError('No pudimos leer tus datos. Intenta otra vez; no se han borrado.');
+    } finally {
+      if (current === generation.current) setLoading(false);
+    }
+  }, []);
+
+  useFocusEffect(useCallback(() => {
+    void reload();
+    return () => { generation.current += 1; };
+  }, [reload]));
+
+  return { tasks, completions, loading, error, reload };
+}
