@@ -13,7 +13,7 @@ export default function Streak() {
   const progress = calculateProgress(tasks, completions);
 
   return (
-    <RouteScreen title="Racha" description="Tu progreso, tarea a tarea" includeTopInset>
+    <RouteScreen title="Racha" description="Tu progreso, tarea a tarea" hasTabBar>
       {loading ? <LoadingState /> : error ? <ErrorState message={error} onRetry={() => { void reload(); }} />
         : tasks.length === 0 ? (
           <>

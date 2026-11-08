@@ -13,7 +13,7 @@ export default function TaskCreated() {
     <RouteScreen
       title="Tarea creada"
       description="Ahora depende de ti"
-      includeTopInset
+      hasTabBar
       actions={[{ label: 'Volver al inicio', href: '/', dismissTo: true }]}
     />
   );
