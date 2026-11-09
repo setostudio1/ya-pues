@@ -1,0 +1,107 @@
+@font-face {
+  font-family: 'Nunito';
+  src: url('/fonts/Nunito-Regular.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  src: url('/fonts/Nunito-SemiBold.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  src: url('/fonts/Nunito-Bold.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+/* Layout changes only. Native keeps its existing scroll and safe-area behavior. */
+@media (min-width: 768px) {
+  #ya-home-list {
+    max-width: 1120px;
+  }
+
+  #ya-home-greeting {
+    padding-top: 32px;
+  }
+
+  #ya-home-reminder-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  #ya-navigation > :last-child {
+    max-width: 1120px;
+  }
+}
+
+@media (min-width: 1024px) {
+  #ya-route-scroll > div,
+  #ya-task-step,
+  #ya-task-details {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-content: start;
+    align-items: start;
+    column-gap: 80px;
+    row-gap: 32px;
+    max-width: 1120px;
+    padding: 56px 40px;
+  }
+
+  #ya-route-scroll > div > :first-child,
+  #ya-task-details > :first-child {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  #ya-route-scroll > div > :nth-last-child(2),
+  #ya-task-step > :nth-child(2),
+  #ya-task-details > :nth-child(2) {
+    grid-column: 1;
+    grid-row: 2;
+    max-width: 400px;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  #ya-task-step > :nth-child(2) > *,
+  #ya-task-details > :nth-child(2) > * {
+    text-align: left;
+  }
+
+  #ya-route-actions,
+  #ya-task-step > :nth-child(3),
+  #ya-task-details > :nth-child(3) {
+    grid-column: 2;
+    grid-row: 2;
+    width: 100%;
+    margin-top: 0;
+  }
+
+  #ya-task-step > :first-child {
+    position: static;
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+  }
+
+  #ya-task-step > :nth-child(n + 4),
+  #ya-task-details > :nth-child(n + 4) {
+    grid-column: 2;
+    margin-top: 0;
+  }
+
+  #ya-task-step > :last-child {
+    max-width: 360px;
+    justify-self: center;
+  }
+}

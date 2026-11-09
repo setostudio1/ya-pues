@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import Button from '../../components/Button';
 import { EmptyState, ErrorState, LoadingState } from '../../components/DataState';
 import RouteScreen from '../../components/RouteScreen';
+import WeeklyStreak from '../../components/WeeklyStreak';
 import { theme } from '../../constants/theme';
 import { useStoredTasks } from '../../hooks/useStoredTasks';
 import { calculateProgress } from '../../utils/tasks';
@@ -22,11 +23,12 @@ export default function Streak() {
           </>
         ) : (
           <>
-            <View style={styles.card}>
+            <View style={[styles.card, styles.streakCard]}>
               <Text style={styles.total}>{progress.streak} {progress.streak === 1 ? 'día' : 'días'}</Text>
               <Text style={styles.text}>de racha actual</Text>
               <Text style={styles.text}>{progress.todayCount} tareas completadas hoy</Text>
             </View>
+            <WeeklyStreak progress={progress} />
             {progress.completed === 0 && <EmptyState message="Completa tu primera tarea desde Inicio para comenzar tu racha." />}
             <View style={styles.card}>
               <Text accessibilityRole="header" style={styles.heading}>Progreso total</Text>
@@ -53,14 +55,18 @@ export default function Streak() {
 }
 
 const styles = StyleSheet.create({
-  card: { padding: theme.spacing.lg, gap: theme.spacing.md, backgroundColor: theme.colors.card, borderRadius: theme.radius.lg },
-  total: { color: theme.colors.primary, fontSize: theme.text.display, fontWeight: 'bold' },
-  heading: { color: theme.colors.text, fontSize: theme.text.heading, fontWeight: '600' },
-  text: { color: theme.colors.textMuted, fontSize: theme.text.small, lineHeight: 22 },
-  track: { height: 12, borderRadius: theme.radius.full, backgroundColor: theme.colors.primarySoft, overflow: 'hidden' },
-  fill: { height: '100%', backgroundColor: theme.colors.primary },
+  card: { ...theme.surfaces.card, gap: theme.spacing.md },
+  streakCard: { backgroundColor: theme.colors.accentSoft, borderColor: theme.colors.border,
+    paddingVertical: theme.spacing.xl },
+  total: { ...theme.typography.display, color: theme.colors.text, fontSize: theme.text.display },
+  heading: { ...theme.typography.heading, color: theme.colors.text, fontSize: theme.text.heading },
+  text: { ...theme.typography.body, color: theme.colors.textMutedStrong, fontSize: theme.text.small, lineHeight: 22 },
+  track: { height: 12, borderRadius: theme.radius.full, backgroundColor: theme.colors.surfaceMuted, overflow: 'hidden' },
+  fill: { height: '100%', borderRadius: theme.radius.full, backgroundColor: theme.colors.mint },
   week: { flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm },
-  day: { padding: theme.spacing.sm, minWidth: 48, borderRadius: theme.radius.md, alignItems: 'center' },
-  activeDay: { backgroundColor: theme.colors.primarySoft },
-  count: { color: theme.colors.primary, fontSize: theme.text.heading, fontWeight: 'bold' },
+  day: { padding: theme.spacing.sm, minWidth: 56, flexGrow: 1, gap: theme.spacing.sm,
+    borderRadius: theme.radius.md, alignItems: 'center', backgroundColor: theme.colors.card,
+    borderWidth: 1, borderColor: theme.colors.border },
+  activeDay: { backgroundColor: theme.colors.accentSoft, borderColor: theme.colors.accent },
+  count: { ...theme.typography.heading, color: theme.colors.text, fontSize: theme.text.subtitle },
 });

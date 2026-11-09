@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import type { Task, TaskCompletion, TaskDraft } from '../types/tasks';
+import { normalizeTaskCompanions } from '../utils/companions';
 import { buildTask, createId, isDateKey, isTime, today } from '../utils/tasks';
 
 export type { Task, TaskCompletion, TaskDraft } from '../types/tasks';
@@ -22,7 +23,8 @@ function isTask(value: unknown): value is Task {
     && typeof value.signedBy === 'string' && value.signedBy.trim().length >= 2
     && ['signature', 'image'].includes(String(value.signatureMode))
     && typeof value.signatureImageUri === 'string'
-    && typeof value.createdAt === 'string' && !Number.isNaN(Date.parse(value.createdAt));
+    && typeof value.createdAt === 'string' && !Number.isNaN(Date.parse(value.createdAt))
+    && (value.companions === undefined || normalizeTaskCompanions(value.companions) !== null);
 }
 
 function isCompletion(value: unknown): value is TaskCompletion {

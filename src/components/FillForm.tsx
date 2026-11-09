@@ -26,18 +26,8 @@ export default function FillForm({ value, onChangeText }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: theme.colors.card,
-    borderRadius: theme.radius.md,
-    padding: theme.spacing.md,
-    minHeight: 120,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-  },
-  input: {
-    minHeight: 96,
-    fontSize: theme.text.heading,
-    color: theme.colors.text,
-    textAlignVertical: 'top',
-  },
+  container: { backgroundColor: theme.colors.card, borderRadius: theme.radius.md,
+    padding: theme.spacing.lg, minHeight: 176, borderWidth: 1, borderColor: theme.colors.cardDepth },
+  input: { ...theme.typography.body, minHeight: 132, fontSize: theme.text.heading, lineHeight: 29,
+    color: theme.colors.text, textAlignVertical: 'top' },
 });

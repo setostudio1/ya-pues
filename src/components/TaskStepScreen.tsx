@@ -26,7 +26,7 @@ export default function TaskStepScreen({
   return (
     <SafeAreaView edges={['top', 'left', 'right', 'bottom']} style={styles.screen}>
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" automaticallyAdjustKeyboardInsets>
-        <View style={styles.container}>
+        <View nativeID="ya-task-step" style={styles.container}>
           <BackButton style={styles.backButton} />
           <StepLabel step={step} title={title} description={description} />
           <View style={styles.body}>{children}</View>
@@ -47,11 +47,12 @@ export default function TaskStepScreen({
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: theme.colors.background },
   scrollContent: { flexGrow: 1, alignItems: 'center' },
-  container: { width: '100%', maxWidth: 402, paddingHorizontal: 34, paddingTop: 80, paddingBottom: 40 },
-  backButton: { position: 'absolute', top: 16, left: 34 },
-  body: { marginTop: 70 },
-  instructions: { alignItems: 'center', marginTop: 80, gap: 4 },
-  instruction: { fontSize: theme.text.body, fontWeight: 'bold', color: theme.colors.text },
-  caption: { fontSize: theme.text.caption, color: theme.colors.textMuted, textAlign: 'center' },
-  buttonContainer: { width: 243, maxWidth: '100%', alignSelf: 'center', marginTop: 80 },
+  container: { flexGrow: 1, width: '100%', maxWidth: 680, paddingHorizontal: theme.spacing.xl,
+    paddingTop: 96, paddingBottom: theme.spacing.xxxl },
+  backButton: { position: 'absolute', top: 16, left: theme.spacing.xl },
+  body: { marginTop: 48, paddingVertical: theme.spacing.lg, paddingHorizontal: theme.spacing.sm },
+  instructions: { alignItems: 'center', marginTop: theme.spacing.xl, gap: theme.spacing.xs },
+  instruction: { ...theme.typography.label, fontSize: theme.text.body, color: theme.colors.text },
+  caption: { ...theme.typography.body, fontSize: theme.text.caption, color: theme.colors.textMutedStrong, textAlign: 'center' },
+  buttonContainer: { width: '100%', maxWidth: 320, alignSelf: 'center', marginTop: 48, gap: theme.spacing.md },
 });

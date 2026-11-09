@@ -26,6 +26,30 @@
     "plugins": [
       "expo-router",
       [
+        "expo-font",
+        {
+          "android": {
+            "fonts": [
+              {
+                "fontFamily": "Nunito",
+                "fontDefinitions": [
+                  { "path": "./public/fonts/Nunito-Regular.ttf", "weight": 400 },
+                  { "path": "./public/fonts/Nunito-SemiBold.ttf", "weight": 600 },
+                  { "path": "./public/fonts/Nunito-Bold.ttf", "weight": 700 }
+                ]
+              }
+            ]
+          },
+          "ios": {
+            "fonts": [
+              "./public/fonts/Nunito-Regular.ttf",
+              "./public/fonts/Nunito-SemiBold.ttf",
+              "./public/fonts/Nunito-Bold.ttf"
+            ]
+          }
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "backgroundColor": "#208AEF",

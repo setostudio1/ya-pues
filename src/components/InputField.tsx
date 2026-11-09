@@ -21,11 +21,10 @@ export default function InputField({ label, style, multiline, ...props }: Props)
 
 const styles = StyleSheet.create({
   container: { gap: theme.spacing.sm },
-  label: { color: theme.colors.text, fontSize: theme.text.body, fontWeight: '600' },
-  input: {
-    minHeight: 48, borderWidth: 1, borderColor: theme.colors.border,
+  label: { ...theme.typography.label, color: theme.colors.text, fontSize: theme.text.small, lineHeight: 21 },
+  input: { ...theme.typography.body, minHeight: 56, borderWidth: 1, borderColor: theme.colors.cardDepth,
     borderRadius: theme.radius.md, backgroundColor: theme.colors.card,
-    padding: theme.spacing.md, fontSize: theme.text.body, color: theme.colors.text,
-  },
-  multiline: { minHeight: 100, textAlignVertical: 'top' },
+    paddingHorizontal: theme.spacing.lg, paddingVertical: theme.spacing.md,
+    fontSize: theme.text.body, color: theme.colors.text },
+  multiline: { minHeight: 128, textAlignVertical: 'top' },
 });

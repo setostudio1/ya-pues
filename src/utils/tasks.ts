@@ -1,4 +1,5 @@
 import type { Task, TaskCompletion, TaskDraft } from '../types/tasks';
+import { normalizeTaskCompanions } from './companions';
 
 export const INTENSITY_LABELS = { low: 'Leve', medium: 'Medio', high: 'Alto' } as const;
 export const PROOF_LABELS = { photo: 'Foto', video: 'Video', timelapse: 'Timelapse' } as const;
@@ -33,6 +34,7 @@ export function createTaskDraft(now = new Date()): TaskDraft {
     dueTime: `${String(deadline.getHours()).padStart(2, '0')}:${String(deadline.getMinutes()).padStart(2, '0')}`,
     intensity: 'low', proofType: 'photo', signedBy: '',
     signatureMode: 'signature', signatureImageUri: '',
+    companions: [],
   };
 }
 
@@ -51,8 +53,11 @@ export function buildTask(draft: TaskDraft, now = new Date()): Task {
   if (draft.signatureMode === 'image' && !/^https?:\/\/\S+$/i.test(draft.signatureImageUri.trim())) {
     throw new TaskValidationError('Escribe el enlace http o https de la imagen de tu firma.');
   }
+  const companions = draft.companions === undefined ? undefined : normalizeTaskCompanions(draft.companions);
+  if (companions === null) throw new TaskValidationError('Revisa los correos de tus compañeros.');
   return {
-    ...draft, title: draft.title.trim(), signedBy: draft.signedBy.trim(),
+    ...draft, ...(companions === undefined ? {} : { companions }),
+    title: draft.title.trim(), signedBy: draft.signedBy.trim(),
     signatureImageUri: draft.signatureMode === 'image' ? draft.signatureImageUri.trim() : '',
     createdAt: now.toISOString(),
   };

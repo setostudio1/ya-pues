@@ -1,15 +1,16 @@
-import { Link } from 'expo-router';
 import { useRef, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import Button from '../../components/Button';
 import { EmptyState, ErrorState, LoadingState } from '../../components/DataState';
-import ScreenHeader from '../../components/ScreenHeader';
+import HomeHeader from '../../components/HomeHeader';
+import HomeReminders from '../../components/HomeReminders';
 import TaskCard from '../../components/TaskCard';
+import WeeklyStreak from '../../components/WeeklyStreak';
 import { theme } from '../../constants/theme';
 import { useStoredTasks } from '../../hooks/useStoredTasks';
 import { recordCompletion } from '../../storage/data';
+import { calculateProgress } from '../../utils/tasks';
 
 export default function Index() {
   const { tasks, completions, loading, error, reload } = useStoredTasks();
@@ -38,15 +39,16 @@ export default function Index() {
     <SafeAreaView edges={['top', 'left', 'right']} style={styles.screen}>
       <View style={styles.content}>
         <FlatList
+          nativeID="ya-home-list"
           style={styles.list}
           data={loading || error ? [] : tasks}
           keyExtractor={(task) => task.id}
           contentContainerStyle={styles.listContent}
           ListHeaderComponent={
-            <View style={styles.section}>
-              <ScreenHeader title="Inicio" description="Buen día. ¿Qué tienes que hacer hoy?" />
-              <Link href="/set-date" asChild><Button label="Crear tarea" /></Link>
-              <Text accessibilityRole="header" style={styles.heading}>Tus tareas</Text>
+            <View nativeID="ya-home-header" style={styles.section}>
+              <HomeHeader />
+              {!loading && !error && <WeeklyStreak progress={calculateProgress(tasks, completions)} />}
+              <Text accessibilityRole="header" style={styles.heading}>Cronograma</Text>
               {loading && <LoadingState />}
               {!!error && <ErrorState message={error} onRetry={() => { void reload(); }} />}
               {!!saveError && <ErrorState message={saveError} />}
@@ -58,10 +60,8 @@ export default function Index() {
             busy={completingId === item.id} disabled={completingId !== null}
             onComplete={() => { void completeTask(item.id); }} />}
           ListFooterComponent={
-            <View style={styles.footer}>
-              <Link href="/notification-1" asChild><Button label="Recordatorio de tarea" variant="secondary" /></Link>
-              <Link href="/notification-3" asChild><Button label="Tarea por vencer" variant="secondary" /></Link>
-              <Link href="/start-page" asChild><Button label="Acceder a mi cuenta" variant="secondary" /></Link>
+            <View nativeID="ya-home-footer" style={styles.footer}>
+              {!loading && !error && <HomeReminders tasks={tasks} completedIds={completedIds} />}
             </View>
           }
         />
@@ -71,17 +71,17 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: theme.colors.background },
+  screen: { flex: 1, backgroundColor: theme.colors.card },
   content: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: theme.spacing.xl,
+    paddingHorizontal: theme.spacing.xl,
+    paddingTop: theme.spacing.xl,
     gap: theme.spacing.lg,
   },
-  list: { flex: 1, width: '100%' },
-  listContent: { gap: theme.spacing.lg, flexGrow: 1 },
-  section: { gap: theme.spacing.lg },
-  heading: { color: theme.colors.text, fontSize: theme.text.heading, fontWeight: '600' },
-  footer: { gap: theme.spacing.md, marginTop: theme.spacing.lg },
+  list: { flex: 1, width: '100%', maxWidth: 1120 },
+  listContent: { gap: theme.spacing.xl, flexGrow: 1 },
+  section: { gap: theme.spacing.xl, marginBottom: theme.spacing.xs },
+  heading: { ...theme.typography.heading, color: theme.colors.text, fontSize: theme.text.body, lineHeight: 24, marginTop: theme.spacing.sm },
+  footer: { gap: theme.spacing.xxl, marginTop: theme.spacing.sm },
 });

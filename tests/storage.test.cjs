@@ -9,7 +9,7 @@ const projectRoot = path.resolve(__dirname, '..');
 const expoRoot = path.join(projectRoot, '.expo');
 fs.mkdirSync(expoRoot, { recursive: true });
 const tempRoot = fs.mkdtempSync(path.join(expoRoot, 'storage-test-'));
-for (const file of ['utils/tasks', 'utils/pickers', 'storage/data']) {
+for (const file of ['utils/invitations', 'utils/companions', 'utils/tasks', 'utils/pickers', 'storage/data']) {
   const source = fs.readFileSync(path.join(projectRoot, 'src', file + '.ts'), 'utf8');
   const output = ts.transpileModule(source, {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true },
@@ -22,6 +22,7 @@ for (const file of ['utils/tasks', 'utils/pickers', 'storage/data']) {
 const storage = require(path.join(tempRoot, 'storage/data.js'));
 const { today, createTaskDraft, buildTask, calculateProgress, isDateKey, isTime } = require(path.join(tempRoot, 'utils/tasks.js'));
 const { getPickerDate, updatePickerDate } = require(path.join(tempRoot, 'utils/pickers.js'));
+const { normalizeTaskCompanions, companionInitials } = require(path.join(tempRoot, 'utils/companions.js'));
 let saved;
 let failWrite;
 let failRead;
@@ -73,14 +74,57 @@ test('real AsyncStorage persists both collections across process restarts and pr
   }
   const original = run('seed');
   assert.equal(original.tasks.length, 1);
+  assert.equal(Object.hasOwn(original.tasks[0], 'companions'), false);
   assert.equal(original.completions[0].taskId, original.tasks[0].id);
   assert.equal(original.completions[0].date, today());
   assert.deepEqual(run('read'), original);
   const appended = run('append');
   assert.equal(appended.tasks.length, 2);
   assert.equal(appended.tasks[0].id, 'second-task');
+  assert.deepEqual(appended.tasks[0].companions, [{ email: 'compa@ejemplo.com' }]);
+  assert.deepEqual(appended.tasks[1], original.tasks[0]);
   assert.equal(appended.completions.length, 2);
   assert.deepEqual(run('read'), appended);
+});
+
+test('companions persist on their own task and do not leak into a fresh draft', async () => {
+  const companions = [{ email: '  Santiago@EJEMPLO.COM ' }, { email: 'santiago@ejemplo.com' },
+    { email: 'sergio@ejemplo.com', avatarUri: 'https://example.com/sergio.png' }];
+  await storage.addTask({ ...draft('shared'), companions });
+  await storage.addTask(draft('solo'));
+  const tasks = await storage.loadTasks();
+  assert.deepEqual(tasks.find((task) => task.id === 'shared').companions, [
+    { email: 'Santiago@ejemplo.com' },
+    { email: 'sergio@ejemplo.com', avatarUri: 'https://example.com/sergio.png' },
+  ]);
+  assert.deepEqual(tasks.find((task) => task.id === 'solo').companions, []);
+  assert.deepEqual(createTaskDraft().companions, []);
+  await storage.recordCompletion('shared');
+  assert.equal((await storage.loadTasks()).find((task) => task.id === 'shared').companions.length, 2);
+});
+
+test('invalid companion data is rejected without overwriting previous tasks', async () => {
+  await storage.addTask(draft('original'));
+  const before = [...saved.entries()];
+  for (const companions of ['invalid', [{}], [{ email: 'not an email' }],
+    [{ email: 'a@ejemplo.com', avatarUri: 'javascript:alert(1)' }]]) {
+    await assert.rejects(storage.addTask({ ...draft('invalid'), companions }));
+    assert.deepEqual([...saved.entries()], before);
+  }
+  const key = [...saved.keys()][0];
+  const corrupt = JSON.stringify([{ ...JSON.parse(saved.get(key))[0], companions: [{ email: 42 }] }]);
+  saved.set(key, corrupt);
+  await assert.rejects(storage.loadTasks());
+  await assert.rejects(storage.addTask(draft('new')));
+  assert.equal(saved.get(key), corrupt);
+});
+
+test('companion normalization preserves initials/photo fallback data without inventing identities', () => {
+  assert.equal(companionInitials('santiago.rojas@ejemplo.com'), 'SR');
+  assert.equal(companionInitials('seto@ejemplo.com'), 'S');
+  assert.equal(companionInitials('sergio+trabajo@ejemplo.com'), 'ST');
+  assert.deepEqual(normalizeTaskCompanions([{ email: 'a@EJEMPLO.COM' }]), [{ email: 'a@ejemplo.com' }]);
+  assert.equal(normalizeTaskCompanions([{ email: 'a@ejemplo.com', avatarUri: 42 }]), null);
 });
 
 test('concurrent creation and repeated taps preserve every task and completion exactly once', async () => {

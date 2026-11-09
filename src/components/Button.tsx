@@ -31,33 +31,14 @@ export default function Button({ label, variant = 'primary', style, disabled, ac
 
 const styles = StyleSheet.create({
   button: {
-    minHeight: 48,
-    justifyContent: 'center',
-    backgroundColor: theme.colors.primary,
-    paddingVertical: theme.spacing.md,
-    paddingHorizontal: theme.spacing.xl,
-    borderRadius: theme.radius.md,
-    alignItems: 'center',
+    minHeight: 54, justifyContent: 'center', alignItems: 'center',
+    backgroundColor: theme.colors.primary, borderColor: theme.colors.primaryDark,
+    borderWidth: 0, borderBottomWidth: theme.border.buttonDepth,
+    paddingVertical: 14, paddingHorizontal: theme.spacing.xl, borderRadius: theme.radius.full,
   },
-
-  pressed: {
-    opacity: 0.8,
-    transform: [{ scale: 0.98 }],
-  },
-
-  secondary: {
-    backgroundColor: theme.colors.primarySoft,
-  },
-
-  disabled: { opacity: 0.5 },
-
-  secondaryLabel: {
-    color: theme.colors.primary,
-  },
-
-  label: {
-    fontSize: theme.text.body,
-    fontWeight: 'bold',
-    color: theme.colors.card,
-  },
+  pressed: { transform: [{ translateY: 1 }], opacity: 0.85 },
+  secondary: { backgroundColor: theme.colors.card, borderColor: theme.colors.border, borderWidth: 1, borderBottomWidth: 1 },
+  disabled: { backgroundColor: theme.colors.disabled, borderColor: theme.colors.disabled, opacity: 0.6 },
+  secondaryLabel: { color: theme.colors.textMutedStrong },
+  label: { ...theme.typography.label, fontSize: theme.text.body, lineHeight: 24, textAlign: 'center', color: theme.colors.card },
 });

@@ -15,8 +15,8 @@ export default function ScreenHeader({ title, subtitle, description }: {
 }
 
 const styles = StyleSheet.create({
-  heading: { gap: theme.spacing.md },
-  subtitle: { color: theme.colors.primary, fontSize: theme.text.small, fontWeight: '600' },
-  title: { color: theme.colors.text, fontSize: theme.text.title, fontWeight: 'bold' },
-  description: { color: theme.colors.textMuted, fontSize: theme.text.body, lineHeight: 24 },
+  heading: { gap: theme.spacing.md, paddingTop: theme.spacing.sm, paddingBottom: theme.spacing.sm },
+  subtitle: { ...theme.typography.caption, color: theme.colors.primary, fontSize: theme.text.small },
+  title: { ...theme.typography.title, color: theme.colors.text, fontSize: theme.text.title, lineHeight: 36 },
+  description: { ...theme.typography.body, color: theme.colors.textMutedStrong, fontSize: theme.text.body },
 });

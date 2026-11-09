@@ -27,8 +27,8 @@ const styles = StyleSheet.create({
     borderRadius: theme.radius.full, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     gap: theme.spacing.sm, backgroundColor: theme.colors.card, borderColor: theme.colors.border, borderWidth: 1 },
   selected: { borderColor: theme.colors.primary, backgroundColor: theme.colors.primarySoft },
-  dot: { width: 10, height: 10, borderRadius: theme.radius.full },
-  label: { fontSize: theme.text.small, color: theme.colors.text },
-  selectedLabel: { color: theme.colors.primary, fontWeight: 'bold' },
+  dot: { width: 8, height: 8, borderRadius: theme.radius.full },
+  label: { ...theme.typography.body, fontSize: theme.text.small, color: theme.colors.text },
+  selectedLabel: { ...theme.typography.label, color: theme.colors.primaryDark, textDecorationLine: 'underline' },
   pressed: { opacity: 0.7 },
 });
