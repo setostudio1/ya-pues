@@ -14,13 +14,12 @@ export default function OptionCard({ label, selected, onPress }: {
 }
 
 const styles = StyleSheet.create({
-  option: {
-    minHeight: 48, borderWidth: 1, borderColor: theme.colors.border,
-    borderRadius: theme.radius.md, padding: theme.spacing.md, justifyContent: 'center',
-    backgroundColor: theme.colors.card,
-  },
-  selected: { borderColor: theme.colors.primary, backgroundColor: theme.colors.primarySoft },
-  label: { color: theme.colors.text, fontSize: theme.text.body },
-  selectedLabel: { color: theme.colors.primary, fontWeight: 'bold' },
+  option: { minHeight: 60, borderWidth: 1, borderColor: theme.colors.border,
+    borderRadius: theme.radius.md, paddingVertical: 16, paddingHorizontal: theme.spacing.lg,
+    justifyContent: 'center', backgroundColor: theme.colors.card },
+  selected: { borderColor: theme.colors.primary, borderWidth: 2, paddingVertical: 15,
+    paddingHorizontal: theme.spacing.lg - 1, backgroundColor: theme.colors.primarySoft },
+  label: { ...theme.typography.body, color: theme.colors.text, fontSize: theme.text.body },
+  selectedLabel: { ...theme.typography.label, color: theme.colors.primaryDark },
   pressed: { opacity: 0.7 },
 });

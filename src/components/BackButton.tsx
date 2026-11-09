@@ -19,7 +19,8 @@ export default function BackButton({ style }: { style?: StyleProp<ViewStyle> }) 
 }
 
 const styles = StyleSheet.create({
-  button: { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', minHeight: 44, minWidth: 44, gap: theme.spacing.xs },
-  label: { color: theme.colors.primary, fontSize: theme.text.small },
+  button: { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', minHeight: 44, minWidth: 44,
+    gap: theme.spacing.xs, paddingRight: theme.spacing.md, borderRadius: theme.radius.full },
+  label: { ...theme.typography.label, color: theme.colors.primary, fontSize: theme.text.small },
   pressed: { opacity: 0.7 },
 });

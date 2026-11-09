@@ -39,10 +39,10 @@ export default function SetDate({ value, onChange, onContinue, error }: Props) {
 }
 
 const styles = StyleSheet.create({
-  datePicker: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 32 },
-  yearPicker: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: theme.spacing.lg, marginTop: theme.spacing.md },
-  yearButton: { minWidth: 44, minHeight: 44, justifyContent: 'center', alignItems: 'center' },
-  year: { fontSize: theme.text.small, color: theme.colors.textMuted },
-  arrow: { fontSize: theme.text.title, color: theme.colors.primary },
+  datePicker: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: theme.spacing.xl },
+  yearPicker: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: theme.spacing.lg, marginTop: theme.spacing.lg },
+  yearButton: { minWidth: 44, minHeight: 44, justifyContent: 'center', alignItems: 'center', borderRadius: theme.radius.full },
+  year: { ...theme.typography.body, fontSize: theme.text.small, color: theme.colors.textMutedStrong },
+  arrow: { ...theme.typography.body, fontSize: theme.text.title, lineHeight: 36, color: theme.colors.primary },
   disabled: { opacity: 0.3 },
 });

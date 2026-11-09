@@ -104,8 +104,9 @@ export default function DatePickerColumn({ items, initialIndex = 0, value, label
 const styles = StyleSheet.create({
   wrapper: { width: 105, flexShrink: 1, height: ITEM_HEIGHT * 3, position: 'relative' },
   content: { paddingVertical: ITEM_HEIGHT },
-  selectedBox: { position: 'absolute', top: ITEM_HEIGHT, left: 0, right: 0, height: ITEM_HEIGHT, backgroundColor: theme.colors.card, borderRadius: theme.radius.md },
+  selectedBox: { position: 'absolute', top: ITEM_HEIGHT, left: 0, right: 0, height: ITEM_HEIGHT,
+    backgroundColor: theme.colors.card, borderRadius: theme.radius.md, borderWidth: 1, borderColor: theme.colors.cardDepth },
   item: { height: ITEM_HEIGHT, alignItems: 'center', justifyContent: 'center' },
-  text: { fontSize: theme.text.title, fontWeight: 'bold', color: theme.colors.textMuted },
-  selectedText: { color: theme.colors.text },
+  text: { ...theme.typography.body, fontSize: 26, lineHeight: 42, color: theme.colors.textMuted, fontVariant: ['tabular-nums'] },
+  selectedText: { ...theme.typography.title, color: theme.colors.text, fontSize: 32 },
 });

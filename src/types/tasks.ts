@@ -2,6 +2,11 @@ export type Intensity = 'low' | 'medium' | 'high';
 export type ProofType = 'photo' | 'video' | 'timelapse';
 export type SignatureMode = 'signature' | 'image';
 
+export type TaskCompanion = {
+  email: string;
+  avatarUri?: string;
+};
+
 export type Task = {
   id: string;
   title: string;
@@ -13,6 +18,7 @@ export type Task = {
   signatureMode: SignatureMode;
   signatureImageUri: string;
   createdAt: string;
+  companions?: TaskCompanion[];
 };
 
 export type TaskDraft = Omit<Task, 'createdAt'>;

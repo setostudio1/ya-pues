@@ -20,5 +20,5 @@ export default function TimeSelector({ value, onChange }: { value: string; onCha
 
 const styles = StyleSheet.create({
   picker: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: theme.spacing.md },
-  separator: { fontSize: theme.text.title, color: theme.colors.text, fontWeight: 'bold' },
+  separator: { ...theme.typography.body, fontSize: theme.text.title, lineHeight: 36, color: theme.colors.textMuted, paddingBottom: 4 },
 });

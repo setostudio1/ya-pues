@@ -9,8 +9,8 @@ export function LoadingState() {
 
 export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
   return (
-    <View style={styles.container}>
-      <Text accessibilityRole="alert" style={styles.text}>{message}</Text>
+    <View style={[styles.container, styles.errorContainer]}>
+      <Text accessibilityRole="alert" style={[styles.text, styles.errorText]}>{message}</Text>
       {onRetry && <Button label="Reintentar" onPress={onRetry} variant="secondary" />}
     </View>
   );
@@ -21,6 +21,9 @@ export function EmptyState({ message }: { message: string }) {
 }
 
 const styles = StyleSheet.create({
-  container: { gap: theme.spacing.md, paddingVertical: theme.spacing.lg },
-  text: { color: theme.colors.textMuted, fontSize: theme.text.body, lineHeight: 24 },
+  container: { gap: theme.spacing.md, padding: theme.spacing.xl, borderWidth: 1,
+    borderColor: theme.colors.border, borderRadius: theme.radius.lg, backgroundColor: theme.colors.card },
+  errorContainer: { backgroundColor: theme.colors.coralSoft, borderColor: theme.colors.coral },
+  errorText: { color: theme.colors.dangerInk },
+  text: { ...theme.typography.body, color: theme.colors.textMutedStrong, fontSize: theme.text.body },
 });

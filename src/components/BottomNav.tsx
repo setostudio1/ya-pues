@@ -10,8 +10,8 @@ export default function BottomNav({ state, descriptors, navigation, insets }: Bo
   const routes = state.routes.filter((route) => route.name !== 'task-created');
 
   return (
-    // Normal document flow reserves the bar height, including its raised button.
-    <View style={styles.container}>
+    // The bar stays in normal flow; the center action overlaps its top edge.
+    <View nativeID="ya-navigation" style={styles.container}>
       <View pointerEvents="none" style={styles.border} />
       <View style={[styles.bar, { paddingBottom: Math.max(insets.bottom, theme.spacing.md) }]}>
         {routes.map((route, index) => {
@@ -43,7 +43,7 @@ export default function BottomNav({ state, descriptors, navigation, insets }: Bo
                   if (!focused && !event.defaultPrevented) navigation.navigate(route.name, route.params);
                 }}
                 onLongPress={() => navigation.emit({ type: 'tabLongPress', target: route.key })}
-                style={({ pressed }) => [styles.tab, pressed && styles.pressed]}
+                style={({ pressed }) => [styles.tab, focused && styles.activeTab, pressed && styles.pressed]}
               >
                 {options.tabBarIcon?.({ focused, color, size: 30 })}
               </Pressable>
@@ -56,17 +56,12 @@ export default function BottomNav({ state, descriptors, navigation, insets }: Bo
 }
 
 const styles = StyleSheet.create({
-  container: { paddingTop: 20, backgroundColor: theme.colors.card },
-  border: {
-    position: 'absolute', top: 20, left: 0, right: 0,
-    borderTopWidth: 1, borderColor: theme.colors.navigationBorder,
-  },
-  bar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
-  tab: { minWidth: 72, minHeight: 64, alignItems: 'center', justifyContent: 'center' },
-  addButton: {
-    width: 75, height: 75, marginTop: -20, borderRadius: theme.radius.full,
-    alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.accent,
-    boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.2)',
-  },
+  container: { backgroundColor: theme.colors.card },
+  border: { position: 'absolute', top: 0, left: 0, right: 0, borderTopWidth: 1, borderColor: theme.colors.navigationBorder },
+  bar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', width: '100%', maxWidth: 960, alignSelf: 'center' },
+  tab: { minWidth: 72, minHeight: 64, alignItems: 'center', justifyContent: 'center', borderRadius: theme.radius.lg },
+  activeTab: { backgroundColor: theme.colors.primarySoft },
+  addButton: { width: 75, height: 75, marginTop: -20, borderRadius: theme.radius.full,
+    alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.accent },
   pressed: { opacity: 0.7 },
 });

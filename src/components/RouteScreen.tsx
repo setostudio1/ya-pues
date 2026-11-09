@@ -36,10 +36,10 @@ export default function RouteScreen({
       edges={hasTabBar ? ['top', 'left', 'right'] : ['top', 'left', 'right', 'bottom']}
       style={styles.screen}
     >
-      <ScrollView keyboardShouldPersistTaps="handled" automaticallyAdjustKeyboardInsets contentContainerStyle={styles.content}>
+      <ScrollView nativeID="ya-route-scroll" keyboardShouldPersistTaps="handled" automaticallyAdjustKeyboardInsets contentContainerStyle={styles.content}>
         {!hasTabBar && <BackButton />}
         <ScreenHeader title={title} subtitle={subtitle} description={description} />
-        <View style={styles.actions}>
+        <View nativeID="ya-route-actions" style={styles.actions}>
           {actions.map((action, index) => (
             <Link key={action.label} href={action.href} dismissTo={action.dismissTo} asChild>
               <Button label={action.label} variant={index === 0 ? 'primary' : 'secondary'} />
@@ -54,10 +54,7 @@ export default function RouteScreen({
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: theme.colors.background },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing.xl,
-    gap: theme.spacing.xl,
-  },
-  actions: { gap: theme.spacing.md },
+  content: { flexGrow: 1, width: '100%', maxWidth: 680, alignSelf: 'center', padding: theme.spacing.xl,
+    paddingBottom: theme.spacing.xxxl, gap: theme.spacing.xxl },
+  actions: { gap: theme.spacing.lg },
 });

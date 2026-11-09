@@ -24,7 +24,7 @@ export default function SetIntensity({ selected, onSelect }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: { gap: theme.spacing.sm },
-  label: { fontSize: theme.text.body, fontWeight: '600', color: theme.colors.text },
+  container: { gap: theme.spacing.md, paddingVertical: theme.spacing.sm },
+  label: { ...theme.typography.label, fontSize: theme.text.body, color: theme.colors.text },
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm },
 });
