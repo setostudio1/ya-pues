@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import SetTime from '../components/SetTime';
 import { useTaskDraft } from '../context/TaskDraftContext';
-import { askNotificationPermission, cancelReminder, scheduleDailyReminder } from '../notifications/notifications';
+import { askNotificationPermission, cancelReminder, scheduleDailyReminder } from '../notifications';
 import { isDateKey, isTime } from '../utils/tasks';
 
 export default function SetTimeScreen() {
