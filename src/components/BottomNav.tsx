@@ -6,7 +6,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { theme } from '../constants/theme';
 
-export default function BottomNav({ state, descriptors, navigation, insets }: BottomTabBarProps) {
+export default function BottomNav({ state, descriptors, emitter, navigateToTab, insets }: BottomTabBarProps) {
   const routes = state.routes.filter((route) => route.name !== 'task-created');
 
   return (
@@ -39,10 +39,10 @@ export default function BottomNav({ state, descriptors, navigation, insets }: Bo
                 accessibilityState={{ selected: focused }}
                 accessibilityLabel={options.tabBarAccessibilityLabel ?? options.title ?? route.name}
                 onPress={() => {
-                  const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
-                  if (!focused && !event.defaultPrevented) navigation.navigate(route.name, route.params);
+                  const event = emitter.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
+                  if (!focused && !event.defaultPrevented) navigateToTab(route.key);
                 }}
-                onLongPress={() => navigation.emit({ type: 'tabLongPress', target: route.key })}
+                onLongPress={() => emitter.emit({ type: 'tabLongPress', target: route.key })}
                 style={({ pressed }) => [styles.tab, focused && styles.activeTab, pressed && styles.pressed]}
               >
                 {options.tabBarIcon?.({ focused, color, size: 30 })}

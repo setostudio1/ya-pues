@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View, type NativeScrollEvent, type NativeSyntheticEvent, type ScrollViewInstance } from 'react-native';
 
 import { theme } from '../constants/theme';
 
@@ -19,7 +19,7 @@ export default function DatePickerColumn({ items, initialIndex = 0, value, label
   const initial = clamp(value === undefined ? initialIndex : items.indexOf(value));
   const [localIndex, setLocalIndex] = useState(initial);
   const selectedIndex = value === undefined ? clamp(localIndex) : clamp(items.indexOf(value));
-  const listRef = useRef<ScrollView>(null);
+  const listRef = useRef<ScrollViewInstance>(null);
   const indexRef = useRef(initial);
   const offsetRef = useRef(initial * ITEM_HEIGHT);
   const [initialOffset] = useState(() => ({ x: 0, y: initial * ITEM_HEIGHT }));

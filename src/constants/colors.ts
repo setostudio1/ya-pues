@@ -28,6 +28,8 @@ export const colors = {
   dangerInk: '#AE2040',
   border: '#DBE2F7',
   navigationBorder: '#DBE2F7',
+  streakRing: '#7D9DD3',
+  streakRingStrong: '#486AA4',
   surfaceMuted: '#F0F3FF',
   cardDepth: '#BCC8EC',
   disabled: '#E2E6F2',

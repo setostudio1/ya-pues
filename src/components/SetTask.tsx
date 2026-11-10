@@ -16,7 +16,7 @@ export default function SetTask({ value, intensity, onChange, onIntensityChange,
   onIntensityChange: (intensity: Intensity) => void; onContinue: () => void; error?: string;
 }) {
   return (
-    <SafeAreaView style={styles.screen}>
+    <SafeAreaView nativeID="ya-task-details-screen" style={styles.screen}>
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" automaticallyAdjustKeyboardInsets>
         <View nativeID="ya-task-details" style={styles.container}>
           <BackButton />

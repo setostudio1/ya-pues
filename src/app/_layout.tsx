@@ -5,12 +5,14 @@ import { StatusBar } from 'expo-status-bar';
 
 import { theme } from '../constants/theme';
 import { TaskDraftProvider } from '../context/TaskDraftContext';
+import { NotificationsProvider } from '../features/reminders/NotificationsProvider';
 
-export const unstable_settings = { initialRouteName: '(tabs)' };
+export const unstable_settings = { anchor: '(tabs)' };
 
 export default function RootLayout() {
   return (
     <TaskDraftProvider>
+      <NotificationsProvider>
       <StatusBar style="dark" />
       <Stack screenOptions={{
         headerShown: false,
@@ -25,11 +27,13 @@ export default function RootLayout() {
         <Stack.Screen name="set-task" options={{ title: 'La tarea' }} />
         <Stack.Screen name="set-proof" options={{ title: 'La evidencia' }} />
         <Stack.Screen name="sign" options={{ title: 'El compromiso' }} />
-        <Stack.Screen name="notification-1" options={{ title: 'Recordatorio' }} />
-        <Stack.Screen name="notification-2" options={{ title: 'Tarea pospuesta' }} />
-        <Stack.Screen name="notification-3" options={{ title: 'Plazo próximo' }} />
-        <Stack.Screen name="notification-4" options={{ title: 'Aviso urgente' }} />
+        <Stack.Screen name="reminders-preview" options={{ title: 'Recordatorios' }} />
+        <Stack.Screen name="notification-1" options={{ title: 'Recordatorio', presentation: 'fullScreenModal' }} />
+        <Stack.Screen name="notification-2" options={{ title: 'Tarea pospuesta', presentation: 'fullScreenModal' }} />
+        <Stack.Screen name="notification-3" options={{ title: 'Plazo próximo', presentation: 'fullScreenModal' }} />
+        <Stack.Screen name="notification-4" options={{ title: 'Aviso urgente', presentation: 'fullScreenModal' }} />
       </Stack>
+      </NotificationsProvider>
     </TaskDraftProvider>
   );
 }

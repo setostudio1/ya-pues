@@ -1,9 +1,5 @@
-import RouteScreen from '../components/RouteScreen';
+import ReminderRoute from '../features/reminders/ReminderRoute';
 
 export default function NotificationTwo() {
-  return (
-    <RouteScreen title="¿En serio?" description="¿Todavía no has empezado tu tarea?" actions={[
-      { label: 'Volver al inicio', href: '/', dismissTo: true },
-    ]} />
-  );
+  return <ReminderRoute variant="unstarted" />;
 }

@@ -103,6 +103,61 @@ test('companions persist on their own task and do not leak into a fresh draft', 
   assert.equal((await storage.loadTasks()).find((task) => task.id === 'shared').companions.length, 2);
 });
 
+test('class practice: create, restart, complete, restart and append preserve real fields and calculated progress', () => {
+  const file = path.join(tempRoot, 'practice-localstorage.db');
+  const fixture = path.join(__dirname, 'fixtures/storage-practice.cjs');
+  function run(action) {
+    return JSON.parse(execFileSync(process.execPath,
+      ['--experimental-webstorage', '--localstorage-file=' + file, fixture, tempRoot, action],
+      { encoding: 'utf8', env: { ...process.env, NODE_NO_WARNINGS: '1' }, stdio: ['pipe', 'pipe', 'pipe'] }));
+  }
+
+  const empty = run('read');
+  assert.equal(empty.tasks.length, 0);
+  assert.equal(empty.completions.length, 0);
+  assert.equal(empty.progress.percentage, 0);
+  const created = run('create');
+  assert.deepEqual(created.tasks.map((task) => task.id), ['animacion', 'taller']);
+  assert.equal(created.completions.length, 0);
+  assert.equal(created.progress.pending, 2);
+  assert.deepEqual(run('read'), created);
+  const first = created.tasks.find((task) => task.id === 'taller');
+  assert.equal(first.title, 'Entrega de taller 🎨');
+  assert.equal(first.intensity, 'high');
+  assert.equal(first.proofType, 'video');
+  assert.equal(first.signedBy, 'María José');
+  assert.equal(first.signatureMode, 'image');
+  assert.equal(first.signatureImageUri, 'https://example.com/firma.png');
+  assert.equal(first.dueTime, '18:30');
+  assert.ok(isDateKey(first.dueDate));
+  assert.deepEqual(first.companions, [{ email: 'Seto@ejemplo.com', avatarUri: 'https://example.com/seto.png' }]);
+
+  const completed = run('complete-first');
+  assert.deepEqual(completed.tasks, created.tasks);
+  assert.equal(completed.completions[0].taskId, 'taller');
+  assert.ok(isDateKey(completed.completions[0].date));
+  assert.equal(completed.progress.percentage, 50);
+  assert.equal(completed.progress.completed, 1);
+  assert.equal(completed.progress.pending, 1);
+  assert.equal(completed.progress.streak, 1);
+  assert.deepEqual(run('read'), completed);
+  assert.deepEqual(run('complete-first'), completed); // Retrying after restart cannot duplicate the action.
+
+  const finished = run('complete-second');
+  assert.equal(finished.progress.percentage, 100);
+  assert.equal(finished.progress.completed, 2);
+  assert.equal(finished.progress.pending, 0);
+  assert.equal(finished.progress.streak, 1); // Two actions on one day remain one streak day.
+  assert.deepEqual(run('read'), finished);
+  const appended = run('append');
+  assert.equal(appended.tasks[0].id, 'tercera');
+  assert.deepEqual(appended.tasks.slice(1), finished.tasks);
+  assert.deepEqual(appended.completions, finished.completions);
+  assert.equal(appended.progress.percentage, 67);
+  assert.equal(appended.progress.pending, 1);
+  assert.deepEqual(run('read'), appended);
+});
+
 test('invalid companion data is rejected without overwriting previous tasks', async () => {
   await storage.addTask(draft('original'));
   const before = [...saved.entries()];

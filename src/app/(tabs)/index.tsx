@@ -8,12 +8,14 @@ import HomeReminders from '../../components/HomeReminders';
 import TaskCard from '../../components/TaskCard';
 import WeeklyStreak from '../../components/WeeklyStreak';
 import { theme } from '../../constants/theme';
+import { useNotifications } from '../../features/reminders/NotificationsProvider';
 import { useStoredTasks } from '../../hooks/useStoredTasks';
 import { recordCompletion } from '../../storage/data';
 import { calculateProgress } from '../../utils/tasks';
 
 export default function Index() {
   const { tasks, completions, loading, error, reload } = useStoredTasks();
+  const { refresh: refreshNotifications, error: notificationError } = useNotifications();
   const [completingId, setCompletingId] = useState<string | null>(null);
   const [saveError, setSaveError] = useState('');
   const completionLock = useRef(false);
@@ -26,6 +28,7 @@ export default function Index() {
     setSaveError('');
     try {
       await recordCompletion(taskId);
+      await refreshNotifications();
       await reload();
     } catch {
       setSaveError('No pudimos guardar la completación. Tu tarea sigue aquí; vuelve a intentarlo.');
@@ -36,7 +39,7 @@ export default function Index() {
   }
 
   return (
-    <SafeAreaView edges={['top', 'left', 'right']} style={styles.screen}>
+    <SafeAreaView nativeID="ya-home-screen" edges={['top', 'left', 'right']} style={styles.screen}>
       <View style={styles.content}>
         <FlatList
           nativeID="ya-home-list"
@@ -52,10 +55,12 @@ export default function Index() {
               {loading && <LoadingState />}
               {!!error && <ErrorState message={error} onRetry={() => { void reload(); }} />}
               {!!saveError && <ErrorState message={saveError} />}
+              {!!notificationError && <ErrorState message={`Tus tareas se conservan. Hay un problema con los avisos: ${notificationError}`}
+                onRetry={() => { void refreshNotifications(); }} />}
             </View>
           }
           ListEmptyComponent={!loading && !error
-            ? <EmptyState message="Todavía no tienes tareas. Crea la primera para empezar." /> : null}
+            ? <EmptyState message="Todavía no tienes tareas. Crea la primera para empezar." /> : undefined}
           renderItem={({ item }) => <TaskCard task={item} completed={completedIds.has(item.id)}
             busy={completingId === item.id} disabled={completingId !== null}
             onComplete={() => { void completeTask(item.id); }} />}

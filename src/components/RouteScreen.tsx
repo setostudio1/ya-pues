@@ -33,6 +33,7 @@ export default function RouteScreen({
 }: Props) {
   return (
     <SafeAreaView
+      nativeID={hasTabBar ? 'ya-tab-route-screen' : 'ya-route-screen'}
       edges={hasTabBar ? ['top', 'left', 'right'] : ['top', 'left', 'right', 'bottom']}
       style={styles.screen}
     >

@@ -6,6 +6,7 @@ import { ErrorState } from '../components/DataState';
 import InputField from '../components/InputField';
 import RouteScreen from '../components/RouteScreen';
 import { useTaskDraft } from '../context/TaskDraftContext';
+import { useNotifications } from '../features/reminders/NotificationsProvider';
 import { addTask } from '../storage/data';
 import { PROOF_LABELS, TaskValidationError } from '../utils/tasks';
 
@@ -13,6 +14,7 @@ export default function Sign() {
   const params = useLocalSearchParams<{ mode?: string }>();
   const mode = params.mode === 'image' ? 'image' : 'signature';
   const { draft, updateDraft, resetDraft } = useTaskDraft();
+  const { refresh: refreshNotifications } = useNotifications();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const saveLock = useRef(false);
@@ -24,6 +26,7 @@ export default function Sign() {
     setError('');
     try {
       const task = await addTask({ ...draft, signatureMode: mode });
+      await refreshNotifications();
       resetDraft();
       router.replace({ pathname: '/task-created', params: { taskId: task.id } });
     } catch (cause) {
