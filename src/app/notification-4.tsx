@@ -1,9 +1,5 @@
-import RouteScreen from '../components/RouteScreen';
+import ReminderRoute from '../features/reminders/ReminderRoute';
 
 export default function NotificationFour() {
-  return (
-    <RouteScreen title="¡Ponte con tu tarea!" description="Deja las distracciones y empieza ahora." actions={[
-      { label: 'Volver al inicio', href: '/', dismissTo: true },
-    ]} />
-  );
+  return <ReminderRoute variant="personal" />;
 }

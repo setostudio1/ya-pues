@@ -1,5 +1,35 @@
 # Que tu app recuerde - Ya pues
 
+## Práctica aplicada a YA PUES
+
+La práctica aportada se aplica a las tareas reales de la app, sus completaciones
+y el progreso de Racha. Esta integración ya estaba presente; se conserva y se
+amplía su comprobación de cierre y reapertura. No se crea otra lista de ejemplo,
+no se cambian las claves y no se borra información existente.
+
+| Requisito de la práctica | Implementación en la app |
+| --- | --- |
+| Guardar las cosas con AsyncStorage y JSON | `addTask` lee las tareas y guarda la lista completa, con la nueva primero. |
+| Guardar los campos propios del proyecto | Título, fecha/hora, intensidad, evidencia elegida, firma y compañeros pertenecen a cada `Task`. |
+| Registrar una acción con ID y fecha local | `recordCompletion` conserva `taskId`, `today()` y el momento de completación. |
+| Leer al entrar a la pantalla | `useStoredTasks` usa `useFocusEffect` y `useCallback` en Inicio y Racha. |
+| Mostrar datos reales y estados | Las pantallas muestran carga, vacío, error o datos guardados; no usan tareas ficticias. |
+| Calcular un resumen | `calculateProgress` calcula totales, porcentaje, últimos siete días y racha desde ambas colecciones. |
+| Cerrar, reabrir y seguir trabajando | La prueba de aceptación ejecuta cada paso en un proceso independiente con el backend instalado de AsyncStorage. |
+
+La comprobación adicional crea dos tareas sin completar, reabre y verifica todos
+sus campos, completa una y comprueba el 50%, reabre y repite la acción sin duplicar
+registros, completa la segunda y comprueba el 100%, luego agrega una tercera sin
+perder las anteriores. Sus datos viven en una base temporal separada de los del
+usuario. El backend probado es el de web; no equivale a haber cerrado Expo Go en
+un teléfono físico.
+
+Guardar ocurre al confirmar **Firmar y guardar tarea**. Un formulario sin confirmar
+sigue siendo un borrador en memoria; no se presenta como una tarea ya guardada.
+La evidencia persistida es su tipo elegido, y la firma en modo imagen es su URL:
+esta práctica no añade captura ni subida de archivos. Los avisos tienen su propia
+configuración persistente, documentada en `docs/reminders.md`. Login no se modifica.
+
 ## Team contract (checkpoint 3)
 
 - Things: tasks with a title, deadline, intensity, proof type and signed commitment.
@@ -7,9 +37,10 @@
 - Summary: pending/completed totals, percentage, seven-day activity and current streak.
 - All three roles from checkpoint 4 are implemented in this project.
 
-`src/storage/data.ts` is the single persistence entry point. Screens never import
+`src/storage/data.ts` is the task/completion persistence entry point. Screens never import
 AsyncStorage directly. It uses AsyncStorage 2.2.0, selected by `expo install` for
-SDK 57, and JSON strings as required by the practice.
+SDK 58, and JSON strings as required by the practice. The SDK 58 migration keeps
+the same storage keys and JSON formats; it does not clear or migrate saved tasks.
 
 | Type / function | Purpose |
 | --- | --- |
@@ -77,9 +108,9 @@ another restart. Test data never touches the user's app storage.
 Additional tests cover concurrency, duplicate actions, invalid drafts, malformed
 storage, read/write failures, orphaned records, local dates, streak gaps and progress.
 
-Verified for this implementation: all 11 automated tests, Expo lint, TypeScript,
-static web export (20 routes including router-generated routes), and Android/iOS
-Hermes bundle generation passed.
+Run the commands above for current results. The suite includes a process-restart
+test for older saved tasks and the complete practice workflow described above,
+in addition to the notification, invitation and SDK compatibility regressions.
 
 Finish the acceptance check on a phone or browser:
 
@@ -96,4 +127,6 @@ testing was unavailable in the agent environment; automated persistence testing
 uses the real web storage backend across independent processes instead.
 
 The GitHub PR, teammate approval and merge into `main` remain team workflow steps.
-The implementation is on `feature/storage`; no issue numbers are assumed.
+The PDF's branch, PR and merge instructions are classroom workflow examples;
+they do not authorize changing branches or publishing this working tree. No issue
+numbers, approvals or merges are assumed.

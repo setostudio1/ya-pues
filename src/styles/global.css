@@ -22,6 +22,34 @@
   font-display: swap;
 }
 
+/* SDK 58 Router leaves web insets to CSS. Mirror each screen's existing edges.
+   Native continues using SafeAreaView and useSafeAreaInsets. */
+#ya-route-screen,
+#ya-tab-route-screen,
+#ya-task-step-screen,
+#ya-task-details-screen,
+#ya-home-screen,
+#ya-streak-screen,
+#ya-reminder-screen {
+  padding-top: env(safe-area-inset-top, 0px) !important;
+  padding-left: env(safe-area-inset-left, 0px) !important;
+  padding-right: env(safe-area-inset-right, 0px) !important;
+}
+
+#ya-route-screen,
+#ya-task-step-screen,
+#ya-task-details-screen {
+  padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+}
+
+#ya-navigation > :last-child {
+  padding-bottom: max(12px, env(safe-area-inset-bottom, 0px)) !important;
+}
+
+#ya-reminder-actions {
+  padding-bottom: max(24px, env(safe-area-inset-bottom, 0px)) !important;
+}
+
 /* Layout changes only. Native keeps its existing scroll and safe-area behavior. */
 @media (min-width: 768px) {
   #ya-home-list {
@@ -44,6 +72,24 @@
 }
 
 @media (min-width: 1024px) {
+  #ya-streak-content {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 64px;
+    padding-top: 40px;
+  }
+
+  #ya-streak-main,
+  #ya-streak-details {
+    flex: 1;
+    min-width: 0;
+    align-self: flex-start;
+  }
+
+  #ya-streak-details {
+    padding-top: 64px;
+  }
+
   #ya-route-scroll > div,
   #ya-task-step,
   #ya-task-details {

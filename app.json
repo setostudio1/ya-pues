@@ -24,7 +24,14 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router",
+      ["expo-router", { "asyncRoutes": { "web": false } }],
+      [
+        "expo-notifications",
+        {
+          "color": "#315BFF",
+          "defaultChannel": "task-reminders-v2"
+        }
+      ],
       [
         "expo-font",
         {
@@ -33,9 +40,18 @@
               {
                 "fontFamily": "Nunito",
                 "fontDefinitions": [
-                  { "path": "./public/fonts/Nunito-Regular.ttf", "weight": 400 },
-                  { "path": "./public/fonts/Nunito-SemiBold.ttf", "weight": 600 },
-                  { "path": "./public/fonts/Nunito-Bold.ttf", "weight": 700 }
+                  {
+                    "path": "./public/fonts/Nunito-Regular.ttf",
+                    "weight": 400
+                  },
+                  {
+                    "path": "./public/fonts/Nunito-SemiBold.ttf",
+                    "weight": 600
+                  },
+                  {
+                    "path": "./public/fonts/Nunito-Bold.ttf",
+                    "weight": 700
+                  }
                 ]
               }
             ]
@@ -56,7 +72,10 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
-      ]
+      ],
+      "expo-image",
+      "expo-status-bar",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,

@@ -24,7 +24,7 @@ export default function TaskStepScreen({
   step, title, description, children, caption, buttonLabel = 'Establecer', onContinue, error,
 }: Props) {
   return (
-    <SafeAreaView edges={['top', 'left', 'right', 'bottom']} style={styles.screen}>
+    <SafeAreaView nativeID="ya-task-step-screen" edges={['top', 'left', 'right', 'bottom']} style={styles.screen}>
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" automaticallyAdjustKeyboardInsets>
         <View nativeID="ya-task-step" style={styles.container}>
           <BackButton style={styles.backButton} />

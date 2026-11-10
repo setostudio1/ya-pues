@@ -1,13 +1,28 @@
 ﻿# Ya pues
 
-Expo SDK 57 / React Native app using Expo Router. Routes live in `src/app/`.
+Expo SDK 58 / React Native 0.88 / React 19.3 app using Expo Router. Routes live in `src/app/`.
 
 ## Run
+
+Use a supported Node.js version: 22.13+ on the 22 line, 24.3+ on the 24 line,
+or 26+. Expo Go on the phone must support SDK 58.
 
 ```sh
 npm install
 npx expo start
 ```
+
+After upgrading from SDK 57, stop the previous Metro server and run
+`npx expo start --clear`, then scan the new QR code with Expo Go for SDK 58.
+Existing development builds need a new native build; JavaScript updates alone
+do not update their SDK. The migration keeps the existing AsyncStorage keys
+and task/completion formats.
+
+SDK 58 compatibility changes: the picker ref uses `ScrollViewInstance`; tab
+presses use Router's `emitter` / `navigateToTab`; notification opening waits for
+the navigation `state` event. Layout anchors replace the old initial-route
+options. Web keeps synchronous routes and uses CSS safe-area insets, as required
+by the SDK 58 streaming renderer. Android/iOS retain their existing safe-area handling.
 
 ## Checkpoints 3 and 4
 
@@ -40,9 +55,13 @@ route and switch with the `mode` query parameter.
 The follow-up persistence practice adds task form inputs, AsyncStorage, completion
 records and calculated streak data. See [the storage contract and acceptance
 check](docs/storage.md). Authentication, registration, Google sign-in, image uploads,
-handwritten signature capture and scheduled notifications are not implemented.
-The four notice screens are reachable manually from Inicio; the prototype's
-ten-second demonstration timer is not a scheduled device notification.
+handwritten signature capture are not implemented.
+Local device notifications are implemented with `expo-notifications` for SDK 58.
+Open **Racha -> Ver recordatorios** to enable task reminders, save a daily time,
+turn either kind off, or schedule a real ten-second test. Permissions are only
+requested from these explicit actions. See [notification setup and device checks](docs/reminders.md).
+The four existing notice screens open with real task data when a task notification
+is tapped. Their separate preview cards still use fictional data and never schedule notices.
 
 The Figma shows the home/person/+ bar. Its navigation has a gap: the person icon
 on HOME has no direct link to STREAK, while STREAK and TASK COMPLETED show the
@@ -78,7 +97,10 @@ Manual checks:
 2. Tap + from either tab; fill in the five steps without a bottom bar.
 3. Sign and save; verify the confirmation, return home and new task in the list.
 4. Open Acceso -> Login -> Bienvenida -> Inicio.
-5. Open all four notices and return home. Check the back button between form steps.
+5. In Racha -> Ver recordatorios, test permission denial, the ten-second notification,
+   a daily time two minutes ahead, persistence after restarting, and cancellation.
+   Enable task notices, create a task, tap its notification and complete the task.
+   Preview all four designs separately. Check the back button between form steps.
 6. On a small phone and with large text, scroll to the last button and confirm
    that the bar does not cover it. Open each route directly as a deep link.
 
