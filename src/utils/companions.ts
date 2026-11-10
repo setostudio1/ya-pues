@@ -1,5 +1,5 @@
-import type { TaskCompanion } from '../types/tasks';
-import { normalizeCompanionEmail } from './invitations';
+import type { TaskCompanion } from '@/types/tasks';
+import { normalizeCompanionEmail } from '@/utils/invitations';
 
 export function normalizeTaskCompanions(value: unknown): TaskCompanion[] | null {
   if (!Array.isArray(value)) return null;

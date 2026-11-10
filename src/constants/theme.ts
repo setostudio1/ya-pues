@@ -1,4 +1,4 @@
-import { colors } from './colors';
+import { colors } from '@/constants/colors';
 
 export const theme = {
   colors,
@@ -33,11 +33,12 @@ export const theme = {
 
   border: { standard: 1, buttonDepth: 3, cardDepth: 1 },
 
+  layout: { maxWidth: 640, formMaxWidth: 480 },
+
   effects: {
     streakCard: '0px 4px 18px rgba(22, 27, 53, 0.08)',
   },
 
-  // Bundled Nunito: regular body, semibold UI, bold titles. No synthetic 800/900.
   typography: {
     display: { fontFamily: 'Nunito', fontWeight: '700' as const, letterSpacing: -0.6 },
     title: { fontFamily: 'Nunito', fontWeight: '700' as const, letterSpacing: -0.4 },

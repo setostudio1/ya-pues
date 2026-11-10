@@ -1,20 +1,17 @@
-import { Link, router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useRef, useState } from 'react';
 
-import Button from '../components/Button';
-import { ErrorState } from '../components/DataState';
-import InputField from '../components/InputField';
-import RouteScreen from '../components/RouteScreen';
-import { useTaskDraft } from '../context/TaskDraftContext';
-import { useNotifications } from '../features/reminders/NotificationsProvider';
-import { addTask } from '../storage/data';
-import { PROOF_LABELS, TaskValidationError } from '../utils/tasks';
+import SignatureFields from '@/components/task-form/SignatureFields';
+import TaskStepScreen from '@/components/task-form/TaskStepScreen';
+import { useTaskDraft } from '@/context/TaskDraftContext';
+import { scheduleTaskReminders } from '@/notifications/reminders';
+import { addTask } from '@/storage/data';
+import { PROOF_LABELS, TaskValidationError } from '@/utils/tasks';
 
-export default function Sign() {
+export default function SignScreen() {
   const params = useLocalSearchParams<{ mode?: string }>();
   const mode = params.mode === 'image' ? 'image' : 'signature';
   const { draft, updateDraft, resetDraft } = useTaskDraft();
-  const { refresh: refreshNotifications } = useNotifications();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const saveLock = useRef(false);
@@ -26,11 +23,13 @@ export default function Sign() {
     setError('');
     try {
       const task = await addTask({ ...draft, signatureMode: mode });
-      await refreshNotifications();
+      await scheduleTaskReminders(task).catch(() => undefined);
       resetDraft();
       router.replace({ pathname: '/task-created', params: { taskId: task.id } });
     } catch (cause) {
-      setError(cause instanceof TaskValidationError ? cause.message : 'No pudimos guardar tu tarea. No se ha borrado nada; intenta otra vez.');
+      setError(cause instanceof TaskValidationError
+        ? cause.message
+        : 'No pudimos guardar tu tarea. No se ha borrado nada; intenta otra vez.');
     } finally {
       saveLock.current = false;
       setSaving(false);
@@ -38,19 +37,10 @@ export default function Sign() {
   }
 
   return (
-    <RouteScreen title="Firma tu compromiso" subtitle="Último paso · El compromiso"
-      description={`Me comprometo a ${draft.title || 'completar mi tarea'} antes del ${draft.dueDate} a las ${draft.dueTime}. Evidencia: ${PROOF_LABELS[draft.proofType]}.`}>
-      <InputField label="Tu nombre para firmar el compromiso" value={draft.signedBy} maxLength={80}
-        editable={!saving} onChangeText={(signedBy) => updateDraft({ signedBy })} />
-      {mode === 'image' && <InputField label="Enlace de la imagen de tu firma" value={draft.signatureImageUri}
-        placeholder="https://…" keyboardType="url" maxLength={2048} autoCapitalize="none" autoCorrect={false}
-        editable={!saving} onChangeText={(signatureImageUri) => updateDraft({ signatureImageUri })} />}
-      <Link href={{ pathname: '/sign', params: { mode: mode === 'image' ? 'signature' : 'image' } }} replace asChild>
-        <Button label={mode === 'image' ? 'Firmar con mi nombre' : 'Usar una imagen de mi firma'} variant="secondary" disabled={saving} />
-      </Link>
-      {!!error && <ErrorState message={error} />}
-      <Button label={saving ? 'Guardando…' : 'Firmar y guardar tarea'} disabled={saving}
-        accessibilityState={{ busy: saving }} onPress={signTask} />
-    </RouteScreen>
+    <TaskStepScreen step="Último paso · El compromiso" title="Firma tu compromiso"
+      description={`Me comprometo a ${draft.title || 'completar mi tarea'} antes del ${draft.dueDate} a las ${draft.dueTime}. Evidencia: ${PROOF_LABELS[draft.proofType]}.`}
+      buttonLabel={saving ? 'Guardando…' : 'Firmar y guardar tarea'} busy={saving} error={error} onContinue={signTask}>
+      <SignatureFields mode={mode} draft={draft} disabled={saving} onChange={updateDraft} />
+    </TaskStepScreen>
   );
 }

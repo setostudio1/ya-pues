@@ -1,9 +1,10 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 
-import SetDate from '../components/SetDate';
-import { useTaskDraft } from '../context/TaskDraftContext';
-import { isDateKey, today } from '../utils/tasks';
+import DateSelector from '@/components/task-form/DateSelector';
+import TaskStepScreen from '@/components/task-form/TaskStepScreen';
+import { useTaskDraft } from '@/context/TaskDraftContext';
+import { isDateKey, today } from '@/utils/tasks';
 
 export default function SetDateScreen() {
   const { draft, updateDraft } = useTaskDraft();
@@ -18,7 +19,9 @@ export default function SetDateScreen() {
   }
 
   return (
-    <SetDate value={draft.dueDate} error={error} onContinue={continueToTime}
-      onChange={(dueDate) => { updateDraft({ dueDate }); setError(''); }} />
+    <TaskStepScreen step="Paso 1 · Fecha límite" title="¿Cuándo tiene que estar hecha esta tarea?"
+      swipeHint="Para cambiar la fecha" buttonLabel="Establecer" error={error} onContinue={continueToTime}>
+      <DateSelector value={draft.dueDate} onChange={(dueDate) => { updateDraft({ dueDate }); setError(''); }} />
+    </TaskStepScreen>
   );
 }
