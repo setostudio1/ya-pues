@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import WheelPicker from '@/components/task-form/WheelPicker';
+import DatePickerColumn from '@/components/task-form/DatePickerColumn';
 import { theme } from '@/constants/theme';
 import { isTime } from '@/utils/tasks';
 
@@ -11,9 +11,9 @@ export default function TimeSelector({ value, onChange }: { value: string; onCha
   const [hour, minute] = (isTime(value) ? value : '12:00').split(':');
   return (
     <View style={styles.picker}>
-      <WheelPicker items={HOURS} value={hour} label="Hora" onChange={(next) => onChange(`${next}:${minute}`)} />
+      <DatePickerColumn items={HOURS} value={hour} label="Hora" onChange={(next) => onChange(`${next}:${minute}`)} />
       <Text style={styles.separator}>:</Text>
-      <WheelPicker items={MINUTES} value={minute} label="Minuto" onChange={(next) => onChange(`${hour}:${next}`)} />
+      <DatePickerColumn items={MINUTES} value={minute} label="Minuto" onChange={(next) => onChange(`${hour}:${next}`)} />
     </View>
   );
 }

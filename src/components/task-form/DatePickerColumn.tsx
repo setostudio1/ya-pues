@@ -13,7 +13,7 @@ type Props = {
 
 const ITEM_HEIGHT = 64;
 
-export default function WheelPicker({ items, initialIndex = 0, value, label = 'Valor', onChange }: Props) {
+export default function DatePickerColumn({ items, initialIndex = 0, value, label = 'Valor', onChange }: Props) {
   const clamp = (index: number) => Math.max(0, Math.min(index, items.length - 1));
   const initial = clamp(value === undefined ? initialIndex : items.indexOf(value));
   const [localIndex, setLocalIndex] = useState(initial);

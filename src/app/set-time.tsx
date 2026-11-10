@@ -1,8 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 
-import TaskStepScreen from '@/components/task-form/TaskStepScreen';
-import TimeSelector from '@/components/task-form/TimeSelector';
+import SetTime from '@/components/task-form/SetTime';
 import { useTaskDraft } from '@/context/TaskDraftContext';
 import { isDateKey, isTime } from '@/utils/tasks';
 
@@ -24,9 +23,7 @@ export default function SetTimeScreen() {
   }
 
   return (
-    <TaskStepScreen step="Paso 2 · Hora límite" title="¿A qué hora tiene que estar hecha esta tarea?"
-      swipeHint="Para cambiar la hora" buttonLabel="Establecer" error={error} onContinue={continueToTask}>
-      <TimeSelector value={draft.dueTime} onChange={(dueTime) => { updateDraft({ dueTime }); setError(''); }} />
-    </TaskStepScreen>
+    <SetTime value={draft.dueTime} error={error} onContinue={continueToTask}
+      onChange={(dueTime) => { updateDraft({ dueTime }); setError(''); }} />
   );
 }

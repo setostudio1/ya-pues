@@ -37,7 +37,7 @@ export default function SignScreen() {
   }
 
   return (
-    <TaskStepScreen step="Último paso · El compromiso" title="Firma tu compromiso"
+    <TaskStepScreen step="Último paso - El compromiso" title="Firma tu compromiso"
       description={`Me comprometo a ${draft.title || 'completar mi tarea'} antes del ${draft.dueDate} a las ${draft.dueTime}. Evidencia: ${PROOF_LABELS[draft.proofType]}.`}
       buttonLabel={saving ? 'Guardando…' : 'Firmar y guardar tarea'} busy={saving} error={error} onContinue={signTask}>
       <SignatureFields mode={mode} draft={draft} disabled={saving} onChange={updateDraft} />
