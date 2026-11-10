@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router } from 'expo-router';
+import { Link } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import ReminderArtwork from '@/components/reminders/ReminderArtwork';
@@ -14,18 +14,18 @@ export default function ReminderPreviewList() {
       {REMINDER_VARIANTS.map((variant) => {
         const { route, label, description } = REMINDERS[variant];
         return (
-          <Pressable key={variant} accessibilityRole="button" accessibilityLabel={`Ver ${label}`}
-            onPress={() => router.push({ pathname: route, params: { preview: '1' } })}
-            style={({ pressed }) => [styles.card, pressed && styles.pressed]}>
-            <View style={styles.thumbnail}>
-              <ReminderArtwork variant={variant} />
-            </View>
-            <View style={styles.copy}>
-              <Text style={styles.title}>{label}</Text>
-              <Text style={styles.description}>{description}</Text>
-            </View>
-            <Ionicons name="arrow-forward" size={20} color={theme.colors.primary} />
-          </Pressable>
+          <Link key={variant} href={{ pathname: route, params: { preview: '1' } }} asChild>
+            <Pressable accessibilityRole="button" accessibilityLabel={`Ver ${label}`} style={styles.card}>
+              <View style={styles.thumbnail}>
+                <ReminderArtwork variant={variant} />
+              </View>
+              <View style={styles.copy}>
+                <Text style={styles.title}>{label}</Text>
+                <Text style={styles.description}>{description}</Text>
+              </View>
+              <Ionicons name="arrow-forward" size={20} color={theme.colors.primary} />
+            </Pressable>
+          </Link>
         );
       })}
     </View>
@@ -39,5 +39,4 @@ const styles = StyleSheet.create({
   copy: { flex: 1, minWidth: 0, gap: theme.spacing.xs },
   title: { ...theme.typography.heading, fontSize: theme.text.body, color: theme.colors.text },
   description: { ...theme.typography.body, fontSize: theme.text.small, lineHeight: 21, color: theme.colors.textMutedStrong },
-  pressed: { opacity: 0.7 },
 });

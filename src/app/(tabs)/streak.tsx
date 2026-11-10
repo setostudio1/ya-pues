@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { Link } from 'expo-router';
 
 import WeeklyStreak from '@/components/home/WeeklyStreak';
 import StreakHero from '@/components/streak/StreakHero';
@@ -23,11 +23,11 @@ export default function StreakScreen() {
       {ready && tasks.length === 0 && (
         <>
           <EmptyState message="Todavía no hay tareas para calcular tu progreso. Crea la primera." />
-          <Button label="Crear tarea" onPress={() => router.push('/set-date')} />
+          <Link href="/set-date" asChild><Button label="Crear tarea" /></Link>
         </>
       )}
       {ready && tasks.length > 0 && <StreakOverview progress={progress} />}
-      <Button label="Ver recordatorios" variant="secondary" onPress={() => router.push('/reminders-preview')} />
+      <Link href="/reminders-preview" asChild><Button label="Ver recordatorios" variant="secondary" /></Link>
     </Screen>
   );
 }

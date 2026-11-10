@@ -11,7 +11,7 @@ const RETURN_HOME_DELAY_MS = 1700;
 const CAN_NOTIFY = Platform.OS !== 'web';
 
 function goHome() {
-  router.dismissTo('/');
+  router.navigate('/');
 }
 
 export default function TaskCreatedScreen() {
@@ -29,7 +29,7 @@ export default function TaskCreatedScreen() {
   }, [isWaitingForAnswer]));
 
   return (
-    <RouteScreen title="Tarea creada" description="Ahora depende de ti" hideBackButton>
+    <RouteScreen title="Tarea creada" description="Ahora depende de ti" hasTabBar>
       <RewardCheck />
       {CAN_NOTIFY && <NotifyCard taskId={taskId} onAnswered={handleAnswered} />}
       <Button label="Volver al inicio" onPress={goHome} />

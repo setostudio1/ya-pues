@@ -6,12 +6,16 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { theme } from '@/constants/theme';
 
+const HIDDEN_ROUTES = ['task-created'];
+
 export default function BottomNav({ state, descriptors, emitter, navigateToTab, insets }: BottomTabBarProps) {
+  const routes = state.routes.filter((route) => !HIDDEN_ROUTES.includes(route.name));
+
   return (
     <View nativeID="ya-navigation" style={styles.container}>
       <View pointerEvents="none" style={styles.border} />
       <View style={[styles.bar, { paddingBottom: Math.max(insets.bottom, theme.spacing.md) }]}>
-        {state.routes.map((route, index) => {
+        {routes.map((route, index) => {
           const options = descriptors[route.key].options;
           const focused = state.routes[state.index].key === route.key;
           const color = focused

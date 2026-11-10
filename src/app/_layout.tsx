@@ -54,7 +54,6 @@ function RootNavigator() {
         <Stack.Screen name="set-task" options={{ title: 'La tarea' }} />
         <Stack.Screen name="set-proof" options={{ title: 'La evidencia' }} />
         <Stack.Screen name="sign" options={{ title: 'El compromiso' }} />
-        <Stack.Screen name="task-created" options={{ title: 'Tarea creada', gestureEnabled: false }} />
         <Stack.Screen name="reminders-preview" options={{ title: 'Recordatorios' }} />
         <Stack.Screen name="notification-1" options={{ title: 'Recordatorio', presentation: 'fullScreenModal' }} />
         <Stack.Screen name="notification-2" options={{ title: 'Tarea pospuesta', presentation: 'fullScreenModal' }} />

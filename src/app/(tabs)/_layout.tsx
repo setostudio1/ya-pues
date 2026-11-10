@@ -28,6 +28,7 @@ export default function TabLayout() {
         title: 'Racha',
         tabBarIcon: ({ color, size }) => <Ionicons name="person" color={iconColor(color)} size={size} />,
       }} />
+      <Tabs.Screen name="task-created" options={{ title: 'Tarea creada' }} />
     </Tabs>
   );
 }

@@ -25,7 +25,7 @@ export default function SignScreen() {
       const task = await addTask({ ...draft, signatureMode: mode });
       await scheduleTaskReminders(task).catch(() => undefined);
       resetDraft();
-      router.replace({ pathname: '/task-created', params: { taskId: task.id } });
+      router.dismissTo({ pathname: '/task-created', params: { taskId: task.id } });
     } catch (cause) {
       setError(cause instanceof TaskValidationError
         ? cause.message

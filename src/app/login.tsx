@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { Link } from 'expo-router';
 
 import AuthScreen from '@/components/auth/AuthScreen';
 import LoginForm from '@/components/auth/LoginForm';
@@ -12,8 +12,9 @@ export default function LoginScreen() {
   return (
     <AuthScreen title="Iniciar sesión" subtitle="Qué bueno verte de nuevo" showBackButton>
       <LoginForm submitting={submitting} error={error} onSubmit={submit} onChange={clearError} />
-      <Button label="¿No tienes cuenta? Crear cuenta" variant="secondary" disabled={submitting}
-        onPress={() => router.replace('/register')} />
+      <Link href="/register" replace asChild>
+        <Button label="¿No tienes cuenta? Crear cuenta" variant="secondary" disabled={submitting} />
+      </Link>
     </AuthScreen>
   );
 }

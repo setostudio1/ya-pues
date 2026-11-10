@@ -16,15 +16,12 @@ type Props = {
   actions?: readonly RouteAction[];
   children?: ReactNode;
   hasTabBar?: boolean;
-  hideBackButton?: boolean;
 };
 
-export default function RouteScreen({
-  title, subtitle, description, actions = [], children, hasTabBar = false, hideBackButton = false,
-}: Props) {
+export default function RouteScreen({ title, subtitle, description, actions = [], children, hasTabBar = false }: Props) {
   return (
     <Screen hasTabBar={hasTabBar}>
-      {!hasTabBar && !hideBackButton && <BackButton />}
+      {!hasTabBar && <BackButton />}
       <ScreenHeader title={title} subtitle={subtitle} description={description} />
       <View style={styles.actions}>
         {actions.map((action, index) => (
