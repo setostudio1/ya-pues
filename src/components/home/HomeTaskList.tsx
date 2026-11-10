@@ -46,7 +46,7 @@ export default function HomeTaskList({
       }
       ListEmptyComponent={ready ? <EmptyState message="Todavía no tienes tareas. Crea la primera para empezar." /> : undefined}
       renderItem={({ item, index }) => (
-        <Animated.View entering={FadeInDown.delay(Math.min(index, 5) * 60).duration(300)}>
+        <Animated.View entering={FadeInDown.delay(index * 100)}>
           <TaskCard task={item} completed={completedIds.has(item.id)} busy={completingId === item.id}
             disabled={completingId !== null} onComplete={() => onComplete(item.id)} />
         </Animated.View>

@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import { Platform } from 'react-native';
 
 import NotifyCard from '@/components/reminders/NotifyCard';
+import RewardCheck from '@/components/task-form/RewardCheck';
 import Button from '@/components/ui/Button';
 import RouteScreen from '@/components/ui/RouteScreen';
 
@@ -29,6 +30,7 @@ export default function TaskCreatedScreen() {
 
   return (
     <RouteScreen title="Tarea creada" description="Ahora depende de ti" hideBackButton>
+      <RewardCheck />
       {CAN_NOTIFY && <NotifyCard taskId={taskId} onAnswered={handleAnswered} />}
       <Button label="Volver al inicio" onPress={goHome} />
     </RouteScreen>
