@@ -3,7 +3,7 @@ import { router, useNavigationContainerRef } from 'expo-router';
 import { useEffect } from 'react';
 import { Platform } from 'react-native';
 
-import { isReminderRoute } from '@/notifications/reminders';
+import { isReminderRoute } from '@/notifications/taskReminders';
 
 function openReminder(response: Notifications.NotificationResponse) {
   const { route, taskId } = response.notification.request.content.data ?? {};

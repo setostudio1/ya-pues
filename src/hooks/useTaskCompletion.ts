@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 
-import { cancelTaskReminders } from '@/notifications/reminders';
+import { cancelTaskReminders } from '@/notifications/taskReminders';
 import { recordCompletion } from '@/storage/data';
 
 export function useTaskCompletion(onCompleted: () => Promise<void>) {

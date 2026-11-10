@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import SignatureFields from '@/components/task-form/SignatureFields';
 import TaskStepScreen from '@/components/task-form/TaskStepScreen';
 import { useTaskDraft } from '@/context/TaskDraftContext';
-import { scheduleTaskReminders } from '@/notifications/reminders';
+import { scheduleTaskReminders } from '@/notifications/taskReminders';
 import { addTask } from '@/storage/data';
 import { PROOF_LABELS, TaskValidationError } from '@/utils/tasks';
 

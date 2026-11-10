@@ -8,7 +8,7 @@ import RouteScreen from '@/components/ui/RouteScreen';
 import { EXAMPLE_TASK_TITLE } from '@/constants/reminders';
 import { useSession } from '@/context/SessionContext';
 import { useStoredTasks } from '@/hooks/useStoredTasks';
-import { snoozeTaskReminder } from '@/notifications/reminders';
+import { snoozeTaskReminder } from '@/notifications/taskReminders';
 import type { ReminderVariant } from '@/types/reminders';
 import { firstName } from '@/utils/auth';
 

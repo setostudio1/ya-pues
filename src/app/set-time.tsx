@@ -4,7 +4,6 @@ import { useState } from 'react';
 import TaskStepScreen from '@/components/task-form/TaskStepScreen';
 import TimeSelector from '@/components/task-form/TimeSelector';
 import { useTaskDraft } from '@/context/TaskDraftContext';
-import { requestPermission } from '@/notifications/reminders';
 import { isDateKey, isTime } from '@/utils/tasks';
 
 function isFutureDeadline(dueDate: string, dueTime: string) {
@@ -16,12 +15,11 @@ export default function SetTimeScreen() {
   const { draft, updateDraft } = useTaskDraft();
   const [error, setError] = useState('');
 
-  async function continueToTask() {
+  function continueToTask() {
     if (!isFutureDeadline(draft.dueDate, draft.dueTime)) {
       setError('Elige una hora futura. Si hace falta, vuelve al paso anterior para cambiar la fecha.');
       return;
     }
-    await requestPermission().catch(() => undefined);
     router.push('/set-task');
   }
 
