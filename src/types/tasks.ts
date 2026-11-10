@@ -19,9 +19,10 @@ export type Task = {
   signatureImageUri: string;
   createdAt: string;
   companions?: TaskCompanion[];
+  ownerId?: string;
 };
 
-export type TaskDraft = Omit<Task, 'createdAt'>;
+export type TaskDraft = Omit<Task, 'createdAt' | 'ownerId'>;
 
 export type TaskCompletion = {
   id: string;

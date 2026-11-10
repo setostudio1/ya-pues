@@ -3,6 +3,7 @@ import { useRef, useState } from 'react';
 
 import SignatureFields from '@/components/task-form/SignatureFields';
 import TaskStepScreen from '@/components/task-form/TaskStepScreen';
+import { useSession } from '@/context/SessionContext';
 import { useTaskDraft } from '@/context/TaskDraftContext';
 import { scheduleTaskReminders } from '@/notifications/taskReminders';
 import { addTask } from '@/storage/data';
@@ -11,6 +12,7 @@ import { PROOF_LABELS, TaskValidationError } from '@/utils/tasks';
 export default function SignScreen() {
   const params = useLocalSearchParams<{ mode?: string }>();
   const mode = params.mode === 'image' ? 'image' : 'signature';
+  const { user } = useSession();
   const { draft, updateDraft, resetDraft } = useTaskDraft();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -22,7 +24,7 @@ export default function SignScreen() {
     setSaving(true);
     setError('');
     try {
-      const task = await addTask({ ...draft, signatureMode: mode });
+      const task = await addTask({ ...draft, signatureMode: mode }, user?.id);
       await scheduleTaskReminders(task).catch(() => undefined);
       resetDraft();
       router.dismissTo({ pathname: '/task-created', params: { taskId: task.id } });

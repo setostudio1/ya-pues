@@ -5,20 +5,22 @@ import HomeHeader from '@/components/home/HomeHeader';
 import HomeTaskList from '@/components/home/HomeTaskList';
 import { theme } from '@/constants/theme';
 import { useSession } from '@/context/SessionContext';
+import { useSignOut } from '@/hooks/useSignOut';
 import { useStoredTasks } from '@/hooks/useStoredTasks';
 import { useTaskCompletion } from '@/hooks/useTaskCompletion';
 import { firstName } from '@/utils/auth';
 
 export default function HomeScreen() {
-  const { user, endSession } = useSession();
+  const { user } = useSession();
   const { tasks, completions, loading, error, reload } = useStoredTasks();
+  const signOut = useSignOut(tasks);
   const { completingId, saveError, completeTask } = useTaskCompletion(reload);
 
   return (
     <SafeAreaView nativeID="ya-home-screen" edges={['top', 'left', 'right']} style={styles.screen}>
       <View style={styles.content}>
         <HomeTaskList
-          header={<HomeHeader name={firstName(user?.name ?? '')} onSignOut={() => { void endSession(); }} />}
+          header={<HomeHeader name={firstName(user?.name ?? '')} onSignOut={() => { void signOut(); }} />}
           tasks={tasks}
           completions={completions}
           loading={loading}

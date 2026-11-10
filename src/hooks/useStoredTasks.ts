@@ -1,10 +1,13 @@
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 
+import { useSession } from '@/context/SessionContext';
 import { loadCompletions, loadTasks } from '@/storage/data';
 import type { Task, TaskCompletion } from '@/types/tasks';
 
 export function useStoredTasks() {
+  const { user } = useSession();
+  const userId = user?.id;
   const [tasks, setTasks] = useState<Task[]>([]);
   const [completions, setCompletions] = useState<TaskCompletion[]>([]);
   const [loading, setLoading] = useState(true);
@@ -16,7 +19,7 @@ export function useStoredTasks() {
     setLoading(true);
     setError('');
     try {
-      const [savedTasks, savedCompletions] = await Promise.all([loadTasks(), loadCompletions()]);
+      const [savedTasks, savedCompletions] = await Promise.all([loadTasks(userId), loadCompletions()]);
       if (current !== generation.current) return;
       setTasks(savedTasks);
       setCompletions(savedCompletions);
@@ -25,7 +28,7 @@ export function useStoredTasks() {
     } finally {
       if (current === generation.current) setLoading(false);
     }
-  }, []);
+  }, [userId]);
 
   useFocusEffect(useCallback(() => {
     void reload();
