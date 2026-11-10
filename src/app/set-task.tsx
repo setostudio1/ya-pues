@@ -1,26 +1,32 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 
-import SetTask from '../components/SetTask';
-import { useTaskDraft } from '../context/TaskDraftContext';
+import IntensityPicker from '@/components/task-form/IntensityPicker';
+import TaskInvitation from '@/components/task-form/TaskInvitation';
+import TaskStepScreen from '@/components/task-form/TaskStepScreen';
+import TaskTitleField from '@/components/task-form/TaskTitleField';
+import { useTaskDraft } from '@/context/TaskDraftContext';
 
 export default function SetTaskScreen() {
   const { draft, updateDraft } = useTaskDraft();
   const [error, setError] = useState('');
 
   function continueToProof() {
-    const taskName = draft.title.trim();
-    if (taskName.length < 3 || taskName.length > 120) {
+    const title = draft.title.trim();
+    if (title.length < 3 || title.length > 120) {
       setError('Escribe una tarea de entre 3 y 120 caracteres.');
       return;
     }
-    updateDraft({ title: taskName });
+    updateDraft({ title });
     router.push('/set-proof');
   }
 
   return (
-    <SetTask value={draft.title} intensity={draft.intensity} error={error} onContinue={continueToProof}
-      onChange={(title) => { updateDraft({ title }); setError(''); }}
-      onIntensityChange={(intensity) => updateDraft({ intensity })} />
+    <TaskStepScreen step="Paso 3 · La tarea" title="¿Qué tienes que hacer?"
+      description="Descríbelo como una acción concreta" error={error} onContinue={continueToProof}>
+      <TaskTitleField value={draft.title} onChange={(title) => { updateDraft({ title }); setError(''); }} />
+      <IntensityPicker value={draft.intensity} onChange={(intensity) => updateDraft({ intensity })} />
+      <TaskInvitation taskTitle={draft.title} />
+    </TaskStepScreen>
   );
 }

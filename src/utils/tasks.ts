@@ -1,5 +1,5 @@
-import type { Task, TaskCompletion, TaskDraft } from '../types/tasks';
-import { normalizeTaskCompanions } from './companions';
+import type { Task, TaskCompletion, TaskDraft } from '@/types/tasks';
+import { normalizeTaskCompanions } from '@/utils/companions';
 
 export const INTENSITY_LABELS = { low: 'Leve', medium: 'Medio', high: 'Alto' } as const;
 export const PROOF_LABELS = { photo: 'Foto', video: 'Video', timelapse: 'Timelapse' } as const;

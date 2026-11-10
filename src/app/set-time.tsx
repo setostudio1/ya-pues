@@ -1,42 +1,34 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 
-import SetTime from '../components/SetTime';
-import { useTaskDraft } from '../context/TaskDraftContext';
-import { askNotificationPermission, cancelReminder, scheduleDailyReminder } from '../notifications';
-import { isDateKey, isTime } from '../utils/tasks';
+import TaskStepScreen from '@/components/task-form/TaskStepScreen';
+import TimeSelector from '@/components/task-form/TimeSelector';
+import { useTaskDraft } from '@/context/TaskDraftContext';
+import { requestPermission } from '@/notifications/reminders';
+import { isDateKey, isTime } from '@/utils/tasks';
+
+function isFutureDeadline(dueDate: string, dueTime: string) {
+  return isDateKey(dueDate) && isTime(dueTime)
+    && new Date(`${dueDate}T${dueTime}:00`).getTime() > Date.now();
+}
 
 export default function SetTimeScreen() {
   const { draft, updateDraft } = useTaskDraft();
   const [error, setError] = useState('');
 
   async function continueToTask() {
-    if (!isDateKey(draft.dueDate) || !isTime(draft.dueTime)
-      || new Date(`${draft.dueDate}T${draft.dueTime}:00`).getTime() <= Date.now()) {
+    if (!isFutureDeadline(draft.dueDate, draft.dueTime)) {
       setError('Elige una hora futura. Si hace falta, vuelve al paso anterior para cambiar la fecha.');
       return;
     }
-
-    // 1. Pedir permiso de notificaciones si no se ha otorgado aún
-    const allowed = await askNotificationPermission();
-
-    if (allowed) {
-      // 2. Extraer la hora y minuto del dueTime (formato "HH:mm")
-      const [hourStr, minuteStr] = draft.dueTime.split(':');
-      const hour = parseInt(hourStr, 10);
-      const minute = parseInt(minuteStr, 10);
-
-      // 3. Cancelar el recordatorio anterior y programar el nuevo a esa hora diaria
-      await cancelReminder();
-      await scheduleDailyReminder(hour, minute);
-    }
-
-    // 4. Ir a la siguiente pantalla (set-task)
+    await requestPermission().catch(() => undefined);
     router.push('/set-task');
   }
 
   return (
-    <SetTime value={draft.dueTime} error={error} onContinue={continueToTask}
-      onChange={(dueTime) => { updateDraft({ dueTime }); setError(''); }} />
+    <TaskStepScreen step="Paso 2 · Hora límite" title="¿A qué hora tiene que estar hecha esta tarea?"
+      swipeHint="Para cambiar la hora" buttonLabel="Establecer" error={error} onContinue={continueToTask}>
+      <TimeSelector value={draft.dueTime} onChange={(dueTime) => { updateDraft({ dueTime }); setError(''); }} />
+    </TaskStepScreen>
   );
 }

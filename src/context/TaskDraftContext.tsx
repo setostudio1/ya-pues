@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useState, type ReactNode } from 'react';
 
-import type { TaskDraft } from '../types/tasks';
-import { createTaskDraft } from '../utils/tasks';
+import type { TaskDraft } from '@/types/tasks';
+import { createTaskDraft } from '@/utils/tasks';
 
 type DraftContext = {
   draft: TaskDraft;

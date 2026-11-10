@@ -1,7 +1,8 @@
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 
-import { loadCompletions, loadTasks, type Task, type TaskCompletion } from '../storage/data';
+import { loadCompletions, loadTasks } from '@/storage/data';
+import type { Task, TaskCompletion } from '@/types/tasks';
 
 export function useStoredTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);

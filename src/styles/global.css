@@ -22,23 +22,17 @@
   font-display: swap;
 }
 
-/* SDK 58 Router leaves web insets to CSS. Mirror each screen's existing edges.
-   Native continues using SafeAreaView and useSafeAreaInsets. */
-#ya-route-screen,
-#ya-tab-route-screen,
-#ya-task-step-screen,
-#ya-task-details-screen,
+/* Web does not apply SafeAreaView insets, so each screen mirrors its native edges here. */
+#ya-screen,
+#ya-tab-screen,
 #ya-home-screen,
-#ya-streak-screen,
 #ya-reminder-screen {
   padding-top: env(safe-area-inset-top, 0px) !important;
   padding-left: env(safe-area-inset-left, 0px) !important;
   padding-right: env(safe-area-inset-right, 0px) !important;
 }
 
-#ya-route-screen,
-#ya-task-step-screen,
-#ya-task-details-screen {
+#ya-screen {
   padding-bottom: env(safe-area-inset-bottom, 0px) !important;
 }
 
@@ -48,106 +42,4 @@
 
 #ya-reminder-actions {
   padding-bottom: max(24px, env(safe-area-inset-bottom, 0px)) !important;
-}
-
-/* Layout changes only. Native keeps its existing scroll and safe-area behavior. */
-@media (min-width: 768px) {
-  #ya-home-list {
-    max-width: 1120px;
-  }
-
-  #ya-home-greeting {
-    padding-top: 32px;
-  }
-
-  #ya-home-reminder-cards {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 20px;
-  }
-
-  #ya-navigation > :last-child {
-    max-width: 1120px;
-  }
-}
-
-@media (min-width: 1024px) {
-  #ya-streak-content {
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 64px;
-    padding-top: 40px;
-  }
-
-  #ya-streak-main,
-  #ya-streak-details {
-    flex: 1;
-    min-width: 0;
-    align-self: flex-start;
-  }
-
-  #ya-streak-details {
-    padding-top: 64px;
-  }
-
-  #ya-route-scroll > div,
-  #ya-task-step,
-  #ya-task-details {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-content: start;
-    align-items: start;
-    column-gap: 80px;
-    row-gap: 32px;
-    max-width: 1120px;
-    padding: 56px 40px;
-  }
-
-  #ya-route-scroll > div > :first-child,
-  #ya-task-details > :first-child {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  #ya-route-scroll > div > :nth-last-child(2),
-  #ya-task-step > :nth-child(2),
-  #ya-task-details > :nth-child(2) {
-    grid-column: 1;
-    grid-row: 2;
-    max-width: 400px;
-    align-items: flex-start;
-    text-align: left;
-  }
-
-  #ya-task-step > :nth-child(2) > *,
-  #ya-task-details > :nth-child(2) > * {
-    text-align: left;
-  }
-
-  #ya-route-actions,
-  #ya-task-step > :nth-child(3),
-  #ya-task-details > :nth-child(3) {
-    grid-column: 2;
-    grid-row: 2;
-    width: 100%;
-    margin-top: 0;
-  }
-
-  #ya-task-step > :first-child {
-    position: static;
-    grid-column: 1;
-    grid-row: 1;
-    justify-self: start;
-  }
-
-  #ya-task-step > :nth-child(n + 4),
-  #ya-task-details > :nth-child(n + 4) {
-    grid-column: 2;
-    margin-top: 0;
-  }
-
-  #ya-task-step > :last-child {
-    max-width: 360px;
-    justify-self: center;
-  }
 }
