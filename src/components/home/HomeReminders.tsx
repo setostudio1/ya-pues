@@ -2,6 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Link } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { ROUTES } from '@/constants/routes';
 import { theme } from '@/constants/theme';
 import type { Task } from '@/types/tasks';
 
@@ -18,7 +19,7 @@ export default function HomeReminders({ tasks, completedIds }: {
       </View>
       <View style={styles.cards}>
         {reminders.map((task) => (
-          <Link key={task.id} href={{ pathname: '/notification-1', params: { taskId: task.id } }} asChild>
+          <Link key={task.id} href={{ pathname: ROUTES.reminderInitial, params: { taskId: task.id } }} asChild>
             <Pressable accessibilityRole="button" accessibilityLabel={`Abrir recordatorio de ${task.title}`} style={styles.card}>
               <View style={styles.icon}>
                 <Ionicons name="calendar" size={24} color={theme.colors.primary} accessible={false} />
@@ -44,7 +45,7 @@ const styles = StyleSheet.create({
   heading: { gap: theme.spacing.xs },
   title: { ...theme.typography.heading, color: theme.colors.text, fontSize: theme.text.body, lineHeight: 24 },
   caption: { ...theme.typography.body, color: theme.colors.textMutedStrong, fontSize: theme.text.caption, lineHeight: 20 },
-  cards: { gap: theme.spacing.md },
+  cards: { flexDirection: theme.directions.homeReminderCards, gap: theme.spacing.md },
   card: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.md, minHeight: 72,
     backgroundColor: theme.colors.primary, borderRadius: theme.radius.sm, padding: theme.spacing.sm },
   icon: { width: 48, height: 48, borderRadius: theme.radius.sm, backgroundColor: theme.colors.primarySoft,

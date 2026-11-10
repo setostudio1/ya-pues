@@ -1,19 +1,20 @@
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Platform, StyleSheet, Switch, Text, View } from 'react-native';
+import { StyleSheet, Switch, Text, View } from 'react-native';
 
 import Button from '@/components/ui/Button';
 import { theme } from '@/constants/theme';
 import { useSession } from '@/context/SessionContext';
-import { askNotificationPermission } from '@/notifications/notifications';
-import { cancelAllTaskReminders, scheduleTestReminder, syncSavedTaskReminders } from '@/notifications/taskReminders';
+import {
+  cancelAllTaskReminders, requestReminderPermission, scheduleTestReminder, syncSavedTaskReminders,
+} from '@/notifications/taskReminders';
 import { loadTaskRemindersEnabled, saveTaskRemindersEnabled } from '@/storage/preferences';
 import type { ReminderResult } from '@/types/reminders';
 
 const RESULT_MESSAGES: Record<ReminderResult, string> = {
   scheduled: 'Aviso de prueba programado para dentro de 10 segundos.',
   denied: 'No hay permiso para avisos. Actívalo en los ajustes del celular.',
-  unsupported: 'Los avisos funcionan en el celular con Expo Go, no en el navegador.',
+  unsupported: 'Este dispositivo no puede mostrar avisos.',
   disabled: 'Activa los avisos de tareas para recibirlos.',
   tooLate: 'Ya no hay tiempo para este aviso.',
 };
@@ -34,8 +35,8 @@ export default function TaskRemindersCard() {
   );
 
   const handleToggle = async (enabled: boolean) => {
-    if (enabled && !(await askNotificationPermission())) {
-      setMessage(RESULT_MESSAGES[Platform.OS === 'web' ? 'unsupported' : 'denied']);
+    if (enabled && !(await requestReminderPermission())) {
+      setMessage(RESULT_MESSAGES.denied);
       return;
     }
     setIsEnabled(enabled);

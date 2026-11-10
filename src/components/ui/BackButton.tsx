@@ -2,6 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, type Href } from 'expo-router';
 import { Pressable, StyleSheet, Text, type StyleProp, type ViewStyle } from 'react-native';
 
+import { ROUTES } from '@/constants/routes';
 import { theme } from '@/constants/theme';
 
 type Props = {
@@ -9,7 +10,7 @@ type Props = {
   fallbackHref?: Href;
 };
 
-export default function BackButton({ style, fallbackHref = '/' }: Props) {
+export default function BackButton({ style, fallbackHref = ROUTES.home }: Props) {
   function goBack() {
     if (router.canGoBack()) router.back();
     else router.replace(fallbackHref);

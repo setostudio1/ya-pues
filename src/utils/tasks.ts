@@ -1,10 +1,15 @@
-import type { Task, TaskCompletion, TaskDraft } from '@/types/tasks';
+import { TITLE_LENGTH } from '@/constants/tasks';
+import type { Task, TaskCompletion, TaskDraft, TaskStatus } from '@/types/tasks';
 import { normalizeTaskCompanions } from '@/utils/companions';
 
-export const INTENSITY_LABELS = { low: 'Leve', medium: 'Medio', high: 'Alto' } as const;
-export const PROOF_LABELS = { photo: 'Foto', video: 'Video', timelapse: 'Timelapse' } as const;
-
 export class TaskValidationError extends Error {}
+
+export const TITLE_ERROR = `Escribe una tarea de entre ${TITLE_LENGTH.min} y ${TITLE_LENGTH.max} caracteres.`;
+
+export function isValidTitle(title: string): boolean {
+  const length = title.trim().length;
+  return length >= TITLE_LENGTH.min && length <= TITLE_LENGTH.max;
+}
 
 export function today(date = new Date()): string {
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -26,6 +31,17 @@ export function isTime(value: unknown): value is string {
   return typeof value === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(value);
 }
 
+export function taskDueTime(task: Pick<Task, 'dueDate' | 'dueTime'>): number {
+  return new Date(`${task.dueDate}T${task.dueTime}:00`).getTime();
+}
+
+export function getTaskStatus(task: Task, completion: TaskCompletion | undefined, now = Date.now()): TaskStatus {
+  if (completion) {
+    return Date.parse(completion.createdAt) > taskDueTime(task) ? 'completedLate' : 'completed';
+  }
+  return now > taskDueTime(task) ? 'overdue' : 'pending';
+}
+
 export function createTaskDraft(now = new Date()): TaskDraft {
   const deadline = new Date(now);
   deadline.setMinutes(deadline.getMinutes() + 30);
@@ -39,8 +55,8 @@ export function createTaskDraft(now = new Date()): TaskDraft {
 }
 
 export function buildTask(draft: TaskDraft, now = new Date()): Task {
-  if (!draft.id || draft.title.trim().length < 3 || draft.title.trim().length > 120) {
-    throw new TaskValidationError('Escribe una tarea de entre 3 y 120 caracteres.');
+  if (!draft.id || !isValidTitle(draft.title)) {
+    throw new TaskValidationError(TITLE_ERROR);
   }
   if (!isDateKey(draft.dueDate)) throw new TaskValidationError('Escribe una fecha válida con formato AAAA-MM-DD.');
   if (!isTime(draft.dueTime)) throw new TaskValidationError('Escribe una hora válida con formato HH:MM.');

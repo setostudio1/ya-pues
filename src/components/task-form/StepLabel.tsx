@@ -17,6 +17,6 @@ export default function StepLabel({ step, title, description }: Props) {
 const styles = StyleSheet.create({
   container: { alignItems: 'center', gap: theme.spacing.md },
   step: { ...theme.typography.caption, fontSize: theme.text.small, color: theme.colors.primary, textAlign: 'center' },
-  title: { ...theme.typography.title, fontSize: 26, lineHeight: 34, color: theme.colors.text, textAlign: 'center', maxWidth: 480 },
+  title: { ...theme.typography.title, fontSize: theme.text.stepTitle, lineHeight: 34, color: theme.colors.text, textAlign: 'center', maxWidth: theme.layout.formMaxWidth },
   description: { ...theme.typography.body, fontSize: theme.text.body, color: theme.colors.textMutedStrong, textAlign: 'center' },
 });

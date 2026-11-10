@@ -48,5 +48,5 @@ const styles = StyleSheet.create({
   stack: { flexDirection: 'row', alignItems: 'center', marginLeft: 'auto' },
   overlap: { marginLeft: -8 },
   overflow: { width: 28, height: 28 },
-  overflowText: { ...theme.typography.label, color: theme.colors.primaryDark, fontSize: 10 },
+  overflowText: { ...theme.typography.label, color: theme.colors.primaryDark, fontSize: theme.text.tiny },
 });

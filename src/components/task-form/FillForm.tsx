@@ -1,5 +1,6 @@
 import { StyleSheet, TextInput, View } from 'react-native';
 
+import { TITLE_LENGTH } from '@/constants/tasks';
 import { theme } from '@/constants/theme';
 
 type Props = {
@@ -17,7 +18,7 @@ export default function FillForm({ value, onChangeText }: Props) {
         placeholderTextColor={theme.colors.textMuted}
         value={value}
         onChangeText={onChangeText}
-        maxLength={120}
+        maxLength={TITLE_LENGTH.max}
         multiline
       />
     </View>

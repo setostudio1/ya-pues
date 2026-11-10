@@ -6,6 +6,7 @@ import Button from '@/components/ui/Button';
 import { EmptyState, LoadingState } from '@/components/ui/DataState';
 import RouteScreen from '@/components/ui/RouteScreen';
 import { EXAMPLE_TASK_TITLE } from '@/constants/reminders';
+import { ROUTES } from '@/constants/routes';
 import { useSession } from '@/context/SessionContext';
 import { useStoredTasks } from '@/hooks/useStoredTasks';
 import { snoozeTaskReminder } from '@/notifications/taskReminders';
@@ -19,7 +20,7 @@ const SNOOZE_ERRORS: Partial<Record<ReminderResult, string>> = {
 };
 
 function goHome() {
-  router.dismissTo('/');
+  router.dismissTo(ROUTES.home);
 }
 
 function close() {
@@ -39,7 +40,7 @@ export default function ReminderRoute({ variant }: { variant: ReminderVariant })
 
   async function snooze() {
     if (isPreview) {
-      router.push({ pathname: '/notification-2', params: { preview: '1' } });
+      router.push({ pathname: ROUTES.reminderUnstarted, params: { preview: '1' } });
       return;
     }
     if (!task) return;
@@ -53,7 +54,7 @@ export default function ReminderRoute({ variant }: { variant: ReminderVariant })
   }
 
   function continueTask() {
-    if (isPreview) router.push({ pathname: '/notification-4', params: { preview: '1' } });
+    if (isPreview) router.push({ pathname: ROUTES.reminderPersonal, params: { preview: '1' } });
     else goHome();
   }
 

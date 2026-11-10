@@ -1,32 +1,41 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import CompanionAvatars from '@/components/home/CompanionAvatars';
-import Button from '@/components/ui/Button';
+import TaskCardActions from '@/components/home/TaskCardActions';
+import { INTENSITY_LABELS, PROOF_LABELS } from '@/constants/tasks';
 import { theme } from '@/constants/theme';
-import type { Task } from '@/types/tasks';
-import { INTENSITY_LABELS, PROOF_LABELS } from '@/utils/tasks';
+import type { Task, TaskStatus } from '@/types/tasks';
 
-export default function TaskCard({ task, completed, busy, disabled, onComplete }: {
-  task: Task; completed: boolean; busy: boolean; disabled: boolean; onComplete: () => void;
-}) {
+type Props = {
+  task: Task;
+  status: TaskStatus;
+  busy: boolean;
+  disabled: boolean;
+  onComplete: () => void;
+  onDelete: () => void;
+};
+
+export default function TaskCard({ task, status, busy, disabled, onComplete, onDelete }: Props) {
   const date = task.dueDate.split('-').reverse().join('/');
+  const isCompleted = status === 'completed' || status === 'completedLate';
+  const isOverdue = status === 'overdue';
+  const textStyle = (isCompleted || isOverdue) && styles.darkText;
+
   return (
     <View style={styles.timelineRow}>
       <View style={styles.timeColumn}>
         <Text accessibilityLabel={`Hora límite ${task.dueTime}`} style={styles.time}>{task.dueTime.replace(':', '.')}</Text>
       </View>
-      <View style={[styles.card, completed && styles.completedCard]}>
-        <Text accessibilityRole="header" style={[styles.title, completed && styles.completedText]}>{task.title}</Text>
-        <Text style={[styles.detail, completed && styles.completedText]}>Límite: {date} a las {task.dueTime}</Text>
-        <Text style={[styles.detail, completed && styles.completedText]}>Intensidad: {INTENSITY_LABELS[task.intensity]} · Evidencia: {PROOF_LABELS[task.proofType]}</Text>
+      <View style={[styles.card, isCompleted && styles.completedCard, isOverdue && styles.overdueCard]}>
+        {isOverdue && <Text style={styles.overdueBadge}>Vencida</Text>}
+        <Text accessibilityRole="header" style={[styles.title, textStyle]}>{task.title}</Text>
+        <Text style={[styles.detail, textStyle]}>Límite: {date} a las {task.dueTime}</Text>
+        <Text style={[styles.detail, textStyle]}>
+          Intensidad: {INTENSITY_LABELS[task.intensity]} · Evidencia: {PROOF_LABELS[task.proofType]}
+        </Text>
         <View style={styles.footer}>
-          <View style={styles.action}>
-            {completed ? <Text style={styles.completed}>Completada</Text> : (
-              <Button label={busy ? 'Guardando…' : 'Completar tarea'}
-                accessibilityLabel={`Completar ${task.title}`} disabled={disabled}
-                accessibilityState={{ busy }} onPress={onComplete} style={styles.completeButton} />
-            )}
-          </View>
+          <TaskCardActions taskId={task.id} taskTitle={task.title} status={status} busy={busy} disabled={disabled}
+            onComplete={onComplete} onDelete={onDelete} />
           <CompanionAvatars companions={task.companions ?? []} />
         </View>
       </View>
@@ -41,13 +50,11 @@ const styles = StyleSheet.create({
   card: { flex: 1, minWidth: 0, backgroundColor: theme.colors.primary,
     padding: theme.spacing.md, gap: theme.spacing.sm, borderRadius: theme.radius.md },
   completedCard: { backgroundColor: theme.colors.mintSoft },
+  overdueCard: { backgroundColor: theme.colors.coralSoft, borderWidth: 1, borderColor: theme.colors.coral },
+  overdueBadge: { ...theme.typography.label, alignSelf: 'flex-start', color: theme.colors.dangerInk,
+    fontSize: theme.text.caption, lineHeight: 18 },
   title: { ...theme.typography.label, color: theme.colors.card, fontSize: theme.text.small, lineHeight: 20 },
   detail: { ...theme.typography.body, color: theme.colors.card, fontSize: theme.text.caption, lineHeight: 18 },
-  completedText: { color: theme.colors.text },
-  footer: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: theme.spacing.sm },
-  action: { flexBasis: 140, flexGrow: 1, flexShrink: 1, minWidth: 0, alignItems: 'flex-end' },
-  completeButton: { alignSelf: 'flex-end', minHeight: 44, borderBottomWidth: 0,
-    backgroundColor: theme.colors.primaryDark, paddingVertical: theme.spacing.sm, paddingHorizontal: theme.spacing.md },
-  completed: { ...theme.typography.label, alignSelf: 'flex-start', color: theme.colors.successInk,
-    fontSize: theme.text.small, paddingVertical: theme.spacing.xs },
+  darkText: { color: theme.colors.text },
+  footer: { flexDirection: theme.directions.taskCardFooter, alignItems: 'center', flexWrap: 'wrap', gap: theme.spacing.sm },
 });

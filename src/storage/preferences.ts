@@ -13,3 +13,9 @@ export async function loadTaskRemindersEnabled(): Promise<boolean> {
 export async function saveTaskRemindersEnabled(enabled: boolean): Promise<void> {
   await AsyncStorage.setItem(TASK_REMINDERS_KEY, JSON.stringify(enabled));
 }
+
+const DAILY_REMINDER_KEY = 'reminder';
+
+export async function saveDailyReminder(reminder: { id: string; hour: number; minute: number }): Promise<void> {
+  await AsyncStorage.setItem(DAILY_REMINDER_KEY, JSON.stringify(reminder));
+}

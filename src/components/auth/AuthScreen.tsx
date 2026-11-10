@@ -4,6 +4,7 @@ import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 
 import BackButton from '@/components/ui/BackButton';
 import Screen from '@/components/ui/Screen';
+import { ROUTES } from '@/constants/routes';
 import { theme } from '@/constants/theme';
 
 type Props = {
@@ -17,7 +18,7 @@ type Props = {
 export default function AuthScreen({ title, subtitle, showBackButton = false, highlightTitle = false, children }: Props) {
   return (
     <Screen centered narrow>
-      {showBackButton && <BackButton fallbackHref="/start-page" />}
+      {showBackButton && <BackButton fallbackHref={ROUTES.startPage} />}
       <Animated.View entering={FadeInDown.duration(400)} style={styles.hero}>
         <Image source={require('@/assets/images/icon.png')} style={styles.mascot}
           resizeMode="contain" accessible={false} />
@@ -39,5 +40,5 @@ const styles = StyleSheet.create({
   title: { ...theme.typography.title, fontSize: theme.text.title, color: theme.colors.text, textAlign: 'center' },
   highlightTitle: { ...theme.typography.display, fontSize: theme.text.display, color: theme.colors.primary },
   subtitle: { ...theme.typography.body, fontSize: theme.text.body, color: theme.colors.textMuted, textAlign: 'center' },
-  body: { gap: theme.spacing.md },
+  body: { flexDirection: theme.directions.authButtons, gap: theme.spacing.md },
 });

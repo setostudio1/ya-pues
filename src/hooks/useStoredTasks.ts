@@ -8,7 +8,7 @@ import type { Task, TaskCompletion } from '@/types/tasks';
 export function useStoredTasks() {
   const { user } = useSession();
   const userId = user?.id;
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [allTasks, setAllTasks] = useState<Task[]>([]);
   const [completions, setCompletions] = useState<TaskCompletion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -21,7 +21,7 @@ export function useStoredTasks() {
     try {
       const [savedTasks, savedCompletions] = await Promise.all([loadTasks(userId), loadCompletions()]);
       if (current !== generation.current) return;
-      setTasks(savedTasks);
+      setAllTasks(savedTasks);
       setCompletions(savedCompletions);
     } catch {
       if (current === generation.current) setError('No pudimos leer tus datos. Intenta otra vez; no se han borrado.');
@@ -35,5 +35,7 @@ export function useStoredTasks() {
     return () => { generation.current += 1; };
   }, [reload]));
 
-  return { tasks, completions, loading, error, reload };
+  const tasks = allTasks.filter((task) => task.archivedAt === undefined);
+
+  return { tasks, allTasks, completions, loading, error, reload };
 }

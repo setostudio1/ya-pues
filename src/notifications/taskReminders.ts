@@ -3,10 +3,14 @@ import { Platform } from 'react-native';
 
 import { REMINDER_VARIANTS, REMINDERS, SNOOZE_MINUTES } from '@/constants/reminders';
 import { askNotificationPermission } from '@/notifications/notifications';
+import {
+  cancelWebNotification, cancelWebTaskNotifications, getWebNotificationIds, scheduleWebNotification,
+} from '@/notifications/webReminders';
 import { loadCompletions, loadTasks } from '@/storage/data';
 import { loadTaskRemindersEnabled } from '@/storage/preferences';
 import type { ReminderResult, ReminderRoute, ReminderVariant } from '@/types/reminders';
 import type { Task, TaskCompletion } from '@/types/tasks';
+import { taskDueTime } from '@/utils/tasks';
 
 const CHANNEL_ID = 'default';
 const TEST_ID = 'test-reminder';
@@ -16,12 +20,18 @@ export function isReminderRoute(value: unknown): value is ReminderRoute {
   return REMINDER_VARIANTS.some((variant) => REMINDERS[variant].route === value);
 }
 
+const isWeb = Platform.OS === 'web';
+
 export async function hasNotificationPermission(): Promise<boolean> {
-  if (Platform.OS === 'web') {
-    return false;
+  if (isWeb) {
+    return true;
   }
   const current = await Notifications.getPermissionsAsync();
   return current.granted;
+}
+
+export async function requestReminderPermission(): Promise<boolean> {
+  return isWeb || askNotificationPermission();
 }
 
 async function canScheduleTaskReminders(): Promise<boolean> {
@@ -30,10 +40,6 @@ async function canScheduleTaskReminders(): Promise<boolean> {
 
 function reminderId(taskId: string, variant: ReminderVariant) {
   return `${taskId}${REMINDERS[variant].route}`;
-}
-
-function taskDueTime(task: Task) {
-  return new Date(`${task.dueDate}T${task.dueTime}:00`).getTime();
 }
 
 function reminderTime(task: Task, variant: ReminderVariant): number | null {
@@ -45,12 +51,31 @@ function reminderTime(task: Task, variant: ReminderVariant): number | null {
   return time > Date.now() && time < due ? time : null;
 }
 
-async function scheduleAt(id: string, time: number, title: string, data: Record<string, string>) {
+type ReminderData = { route: ReminderRoute; taskId?: string };
+
+async function scheduleAt(id: string, time: number, title: string, variant: ReminderVariant, data: ReminderData) {
+  if (isWeb) {
+    scheduleWebNotification(time, { id, kind: variant, title, body: 'Toca para ver tu compromiso.', ...data });
+    return;
+  }
   await Notifications.scheduleNotificationAsync({
     identifier: id,
     content: { title, body: 'Toca para ver tu compromiso.', data },
     trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(time), channelId: CHANNEL_ID },
   });
+}
+
+async function cancelById(id: string) {
+  if (isWeb) cancelWebNotification(id);
+  else await Notifications.cancelScheduledNotificationAsync(id);
+}
+
+async function pendingReminderIds(): Promise<Set<string>> {
+  if (isWeb) {
+    return getWebNotificationIds();
+  }
+  const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+  return new Set(scheduled.map((entry) => entry.identifier));
 }
 
 async function scheduleMissingReminders(task: Task, pendingIds: Set<string>) {
@@ -59,7 +84,7 @@ async function scheduleMissingReminders(task: Task, pendingIds: Set<string>) {
     const time = reminderTime(task, variant);
     if (time !== null && !pendingIds.has(id)) {
       const { route, label } = REMINDERS[variant];
-      await scheduleAt(id, time, `${label}: ${task.title}`, { route, taskId: task.id });
+      await scheduleAt(id, time, `${label}: ${task.title}`, variant, { route, taskId: task.id });
     }
   }
 }
@@ -81,8 +106,7 @@ export async function syncTaskReminders(tasks: Task[], completions: TaskCompleti
   if (!(await canScheduleTaskReminders())) {
     return;
   }
-  const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-  const pendingIds = new Set(scheduled.map((entry) => entry.identifier));
+  const pendingIds = await pendingReminderIds();
   const completedIds = new Set(completions.map((entry) => entry.taskId));
   for (const task of tasks) {
     if (!completedIds.has(task.id)) {
@@ -97,16 +121,14 @@ export async function syncSavedTaskReminders(userId?: string): Promise<void> {
 }
 
 export async function cancelTaskReminders(taskId: string): Promise<void> {
-  if (Platform.OS === 'web') {
-    return;
-  }
   for (const variant of REMINDER_VARIANTS) {
-    await Notifications.cancelScheduledNotificationAsync(reminderId(taskId, variant));
+    await cancelById(reminderId(taskId, variant));
   }
 }
 
 export async function cancelAllTaskReminders(): Promise<void> {
-  if (Platform.OS === 'web') {
+  if (isWeb) {
+    cancelWebTaskNotifications();
     return;
   }
   const scheduled = await Notifications.getAllScheduledNotificationsAsync();
@@ -118,9 +140,6 @@ export async function cancelAllTaskReminders(): Promise<void> {
 }
 
 export async function snoozeTaskReminder(task: Task): Promise<ReminderResult> {
-  if (Platform.OS === 'web') {
-    return 'unsupported';
-  }
   if (!(await loadTaskRemindersEnabled())) {
     return 'disabled';
   }
@@ -128,24 +147,21 @@ export async function snoozeTaskReminder(task: Task): Promise<ReminderResult> {
   if (fireAt >= taskDueTime(task)) {
     return 'tooLate';
   }
-  if (!(await askNotificationPermission())) {
+  if (!(await requestReminderPermission())) {
     return 'denied';
   }
 
   const { route, label } = REMINDERS.unstarted;
-  await Notifications.cancelScheduledNotificationAsync(reminderId(task.id, 'initial'));
-  await scheduleAt(reminderId(task.id, 'unstarted'), fireAt, `${label} ${task.title}`, { route, taskId: task.id });
+  await cancelById(reminderId(task.id, 'initial'));
+  await scheduleAt(reminderId(task.id, 'unstarted'), fireAt, `${label} ${task.title}`, 'unstarted', { route, taskId: task.id });
   return 'scheduled';
 }
 
 export async function scheduleTestReminder(): Promise<ReminderResult> {
-  if (Platform.OS === 'web') {
-    return 'unsupported';
-  }
-  if (!(await askNotificationPermission())) {
+  if (!(await requestReminderPermission())) {
     return 'denied';
   }
 
-  await scheduleAt(TEST_ID, Date.now() + 10 * 1000, '¡YA PUES! Aviso de prueba', { route: REMINDERS.initial.route });
+  await scheduleAt(TEST_ID, Date.now() + 10 * 1000, '¡YA PUES! Aviso de prueba', 'initial', { route: REMINDERS.initial.route });
   return 'scheduled';
 }

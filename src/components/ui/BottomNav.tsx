@@ -4,6 +4,7 @@ import type { BottomTabBarProps } from 'expo-router/js-tabs';
 import { Fragment } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { ROUTES } from '@/constants/routes';
 import { theme } from '@/constants/theme';
 
 const HIDDEN_ROUTES = ['task-created'];
@@ -25,7 +26,7 @@ export default function BottomNav({ state, descriptors, emitter, navigateToTab, 
           return (
             <Fragment key={route.key}>
               {index === 1 && (
-                <Link href="/set-date" asChild>
+                <Link href={ROUTES.setDate} asChild>
                   <Pressable
                     accessibilityRole="button"
                     accessibilityLabel="Crear tarea"

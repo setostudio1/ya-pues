@@ -3,11 +3,13 @@ import { useRef, useState } from 'react';
 
 import SignatureFields from '@/components/task-form/SignatureFields';
 import TaskStepScreen from '@/components/task-form/TaskStepScreen';
+import { ROUTES } from '@/constants/routes';
+import { PROOF_LABELS } from '@/constants/tasks';
 import { useSession } from '@/context/SessionContext';
 import { useTaskDraft } from '@/context/TaskDraftContext';
 import { scheduleTaskReminders } from '@/notifications/taskReminders';
 import { addTask } from '@/storage/data';
-import { PROOF_LABELS, TaskValidationError } from '@/utils/tasks';
+import { TaskValidationError } from '@/utils/tasks';
 
 export default function SignScreen() {
   const params = useLocalSearchParams<{ mode?: string }>();
@@ -27,7 +29,7 @@ export default function SignScreen() {
       const task = await addTask({ ...draft, signatureMode: mode }, user?.id);
       await scheduleTaskReminders(task).catch(() => undefined);
       resetDraft();
-      router.dismissTo({ pathname: '/task-created', params: { taskId: task.id } });
+      router.dismissTo({ pathname: ROUTES.taskCreated, params: { taskId: task.id } });
     } catch (cause) {
       setError(cause instanceof TaskValidationError
         ? cause.message

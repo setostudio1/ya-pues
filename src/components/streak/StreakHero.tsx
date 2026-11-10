@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
   illustration: { width: '100%', maxWidth: 320, aspectRatio: 1, marginBottom: theme.spacing.md },
   ring: { position: 'absolute', width: '94%', height: '94%', left: '3%', top: '10%' },
   counter: { alignItems: 'center', marginTop: theme.spacing.xl, gap: theme.spacing.xs },
-  total: { ...theme.typography.display, color: theme.colors.text, fontSize: 56, lineHeight: 66, textAlign: 'center' },
+  total: { ...theme.typography.display, color: theme.colors.text, fontSize: theme.text.hero, lineHeight: 66, textAlign: 'center' },
   status: { ...theme.typography.label, color: theme.colors.streakRingStrong,
     fontSize: theme.text.small, lineHeight: 20, textAlign: 'center' },
 });

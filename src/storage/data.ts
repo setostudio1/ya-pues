@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import type { Task, TaskCompletion, TaskDraft } from '@/types/tasks';
-import { buildTask, createId, today } from '@/utils/tasks';
+import type { Task, TaskCompletion, TaskDraft, TaskUpdate } from '@/types/tasks';
+import { buildTask, createId, TaskValidationError, today } from '@/utils/tasks';
 
 const TASKS_KEY = 'ya-pues:tasks:v1';
 const COMPLETIONS_KEY = 'ya-pues:completions:v1';
@@ -27,7 +27,7 @@ export async function loadTasks(userId?: string): Promise<Task[]> {
   return visible.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
-export async function saveTasks(tasks: Task[]): Promise<void> {
+async function saveTasks(tasks: Task[]): Promise<void> {
   await AsyncStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
 }
 
@@ -35,7 +35,7 @@ export function loadCompletions(): Promise<TaskCompletion[]> {
   return readList<TaskCompletion>(COMPLETIONS_KEY);
 }
 
-export async function saveCompletions(completions: TaskCompletion[]): Promise<void> {
+async function saveCompletions(completions: TaskCompletion[]): Promise<void> {
   await AsyncStorage.setItem(COMPLETIONS_KEY, JSON.stringify(completions));
 }
 
@@ -66,5 +66,33 @@ export function recordCompletion(taskId: string): Promise<void> {
     const now = new Date();
     const completion = { id: createId(), taskId, date: today(now), createdAt: now.toISOString() };
     await saveCompletions([completion, ...completions]);
+  });
+}
+
+export function updateTask(taskId: string, changes: TaskUpdate): Promise<Task> {
+  return enqueueWrite(async () => {
+    const [tasks, completions] = await Promise.all([loadTasks(), loadCompletions()]);
+    const existing = tasks.find((task) => task.id === taskId);
+    if (!existing) {
+      throw new TaskValidationError('No se encontró esta tarea.');
+    }
+    if (completions.some((entry) => entry.taskId === taskId)) {
+      throw new TaskValidationError('Una tarea completada no se puede editar.');
+    }
+
+    const updated: Task = { ...buildTask({ ...existing, ...changes }), createdAt: existing.createdAt };
+    await saveTasks(tasks.map((task) => (task.id === taskId ? updated : task)));
+    return updated;
+  });
+}
+
+export function deleteTask(taskId: string): Promise<void> {
+  return enqueueWrite(async () => {
+    const [tasks, completions] = await Promise.all([loadTasks(), loadCompletions()]);
+    const isCompleted = completions.some((entry) => entry.taskId === taskId);
+    const remaining = isCompleted
+      ? tasks.map((task) => (task.id === taskId ? { ...task, archivedAt: new Date().toISOString() } : task))
+      : tasks.filter((task) => task.id !== taskId);
+    await saveTasks(remaining);
   });
 }

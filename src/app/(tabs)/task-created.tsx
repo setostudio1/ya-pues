@@ -6,12 +6,13 @@ import NotifyCard from '@/components/reminders/NotifyCard';
 import RewardCheck from '@/components/task-form/RewardCheck';
 import Button from '@/components/ui/Button';
 import RouteScreen from '@/components/ui/RouteScreen';
+import { ROUTES } from '@/constants/routes';
 
 const RETURN_HOME_DELAY_MS = 1700;
 const CAN_NOTIFY = Platform.OS !== 'web';
 
 function goHome() {
-  router.navigate('/');
+  router.navigate(ROUTES.home);
 }
 
 export default function TaskCreatedScreen() {

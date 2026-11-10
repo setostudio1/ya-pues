@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 
+import { ROUTES } from '@/constants/routes';
 import { useSession } from '@/context/SessionContext';
 import type { User } from '@/types/auth';
 import { AuthError } from '@/utils/auth';
@@ -16,7 +17,7 @@ export function useAuthSubmit<Input>(authenticate: (input: Input) => Promise<Use
     setError('');
     try {
       const user = await authenticate(input);
-      router.replace('/welcome');
+      router.replace(ROUTES.welcome);
       await startSession(user);
     } catch (cause) {
       setError(cause instanceof AuthError ? cause.message : 'Algo salió mal. Revisa tu conexión e intenta otra vez.');

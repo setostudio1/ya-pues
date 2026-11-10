@@ -3,8 +3,9 @@ import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { theme } from '@/constants/theme';
-import { askNotificationPermission } from '@/notifications/notifications';
-import { hasNotificationPermission, scheduleSavedTaskReminders } from '@/notifications/taskReminders';
+import {
+  hasNotificationPermission, requestReminderPermission, scheduleSavedTaskReminders,
+} from '@/notifications/taskReminders';
 
 type Status = 'idle' | 'scheduled' | 'denied';
 
@@ -26,7 +27,7 @@ export default function NotifyCard({ taskId, onAnswered }: Props) {
   }, [onAnswered]);
 
   const handlePress = async () => {
-    const allowed = await askNotificationPermission();
+    const allowed = await requestReminderPermission();
     if (!allowed) {
       setStatus('denied');
       onAnswered();

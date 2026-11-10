@@ -7,16 +7,16 @@ import { theme } from '@/constants/theme';
 import { useSession } from '@/context/SessionContext';
 import { useSignOut } from '@/hooks/useSignOut';
 import { useStoredTasks } from '@/hooks/useStoredTasks';
-import { useTaskCompletion } from '@/hooks/useTaskCompletion';
+import { useTaskActions } from '@/hooks/useTaskActions';
 import { useTaskReminderSync } from '@/hooks/useTaskReminderSync';
 import { firstName } from '@/utils/auth';
 
 export default function HomeScreen() {
   const { user } = useSession();
-  const { tasks, completions, loading, error, reload } = useStoredTasks();
+  const { tasks, allTasks, completions, loading, error, reload } = useStoredTasks();
   const signOut = useSignOut(tasks);
   useTaskReminderSync(tasks, completions, loading);
-  const { completingId, saveError, completeTask } = useTaskCompletion(reload);
+  const { busyId, saveError, completeTask, deleteTask } = useTaskActions(reload);
 
   return (
     <SafeAreaView nativeID="ya-home-screen" edges={['top', 'left', 'right']} style={styles.screen}>
@@ -24,13 +24,15 @@ export default function HomeScreen() {
         <HomeTaskList
           header={<HomeHeader name={firstName(user?.name ?? '')} onSignOut={() => { void signOut(); }} />}
           tasks={tasks}
+          allTasks={allTasks}
           completions={completions}
           loading={loading}
           error={error}
           saveError={saveError}
-          completingId={completingId}
+          busyId={busyId}
           onRetry={() => { void reload(); }}
           onComplete={(taskId) => { void completeTask(taskId); }}
+          onDelete={(taskId) => { void deleteTask(taskId); }}
         />
       </View>
     </SafeAreaView>

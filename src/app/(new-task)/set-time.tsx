@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 
 import SetTime from '@/components/task-form/SetTime';
+import { ROUTES } from '@/constants/routes';
 import { useTaskDraft } from '@/context/TaskDraftContext';
 import { isDateKey, isTime } from '@/utils/tasks';
 
@@ -19,7 +20,7 @@ export default function SetTimeScreen() {
       setError('Elige una hora futura. Si hace falta, vuelve al paso anterior para cambiar la fecha.');
       return;
     }
-    router.push('/set-task');
+    router.push(ROUTES.setTask);
   }
 
   return (

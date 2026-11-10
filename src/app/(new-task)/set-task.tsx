@@ -2,7 +2,9 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 
 import SetTask from '@/components/task-form/SetTask';
+import { ROUTES } from '@/constants/routes';
 import { useTaskDraft } from '@/context/TaskDraftContext';
+import { isValidTitle, TITLE_ERROR } from '@/utils/tasks';
 
 export default function SetTaskScreen() {
   const { draft, updateDraft } = useTaskDraft();
@@ -10,12 +12,12 @@ export default function SetTaskScreen() {
 
   function continueToProof() {
     const title = draft.title.trim();
-    if (title.length < 3 || title.length > 120) {
-      setError('Escribe una tarea de entre 3 y 120 caracteres.');
+    if (!isValidTitle(title)) {
+      setError(TITLE_ERROR);
       return;
     }
     updateDraft({ title });
-    router.push('/set-proof');
+    router.push(ROUTES.setProof);
   }
 
   return (

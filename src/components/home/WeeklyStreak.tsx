@@ -1,6 +1,7 @@
 import { Image } from 'expo-image';
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 
+import { WEEKDAYS } from '@/constants/tasks';
 import { theme } from '@/constants/theme';
 import { today, type calculateProgress } from '@/utils/tasks';
 
@@ -9,7 +10,6 @@ type Props = {
   style?: StyleProp<ViewStyle>;
 };
 
-const WEEKDAYS = ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá', 'Do'];
 const FLASH_FIRST = require('@/assets/images/streak/flash-first.svg');
 const FLASH = require('@/assets/images/streak/flash.svg');
 const FLASH_SMALL = require('@/assets/images/streak/flash-small.svg');

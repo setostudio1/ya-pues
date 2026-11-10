@@ -1,14 +1,8 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { INTENSITY_COLORS, INTENSITY_LABELS } from '@/constants/tasks';
 import { theme } from '@/constants/theme';
 import type { Intensity } from '@/types/tasks';
-import { INTENSITY_LABELS } from '@/utils/tasks';
-
-const INTENSITY_COLORS = {
-  low: theme.colors.intensityLow,
-  medium: theme.colors.intensityMedium,
-  high: theme.colors.intensityHigh,
-};
 
 export default function IntensityChip({ intensity, selected, onPress }: {
   intensity: Intensity; selected: boolean; onPress: () => void;

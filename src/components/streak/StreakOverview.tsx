@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   text: { ...theme.typography.body, color: theme.colors.textMutedStrong, fontSize: theme.text.small, lineHeight: 22 },
   track: { height: 12, borderRadius: theme.radius.full, backgroundColor: theme.colors.surfaceMuted, overflow: 'hidden' },
   fill: { height: '100%', borderRadius: theme.radius.full, backgroundColor: theme.colors.mint },
-  week: { flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm },
+  week: { flexDirection: theme.directions.streakDays, flexWrap: 'wrap', gap: theme.spacing.sm },
   day: { padding: theme.spacing.sm, minWidth: 56, flexGrow: 1, gap: theme.spacing.sm,
     borderRadius: theme.radius.md, alignItems: 'center', backgroundColor: theme.colors.card,
     borderWidth: 1, borderColor: theme.colors.border },

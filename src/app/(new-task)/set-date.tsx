@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 
 import SetDate from '@/components/task-form/SetDate';
+import { ROUTES } from '@/constants/routes';
 import { useTaskDraft } from '@/context/TaskDraftContext';
 import { isDateKey, today } from '@/utils/tasks';
 
@@ -14,7 +15,7 @@ export default function SetDateScreen() {
       setError('Elige una fecha de hoy en adelante. Puedes cambiar el año debajo del selector.');
       return;
     }
-    router.push('/set-time');
+    router.push(ROUTES.setTime);
   }
 
   return (

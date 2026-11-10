@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 
 import Button from '@/components/ui/Button';
 import InputField from '@/components/ui/InputField';
 import { theme } from '@/constants/theme';
 import { askNotificationPermission, cancelReminder, scheduleDailyReminder } from '@/notifications/notifications';
+import { scheduleWebDailyReminder } from '@/notifications/webReminders';
 
 function isValidNumber(value: string, max: number) {
   const number = Number(value);
@@ -23,14 +24,18 @@ export default function DailyReminderForm({ onSaved }: { onSaved: () => void }) 
 
   const handleSave = async () => {
     setIsSaving(true);
-    const allowed = await askNotificationPermission();
+    const allowed = Platform.OS === 'web' || await askNotificationPermission();
     if (!allowed) {
       setMessage('Para guardar el recordatorio, activa los avisos en el celular.');
       setIsSaving(false);
       return;
     }
     await cancelReminder();
-    await scheduleDailyReminder(Number(hour), Number(minute));
+    if (Platform.OS === 'web') {
+      await scheduleWebDailyReminder(Number(hour), Number(minute));
+    } else {
+      await scheduleDailyReminder(Number(hour), Number(minute));
+    }
     setMessage('');
     setIsSaving(false);
     onSaved();
