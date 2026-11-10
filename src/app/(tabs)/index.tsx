@@ -8,12 +8,14 @@ import { useSession } from '@/context/SessionContext';
 import { useSignOut } from '@/hooks/useSignOut';
 import { useStoredTasks } from '@/hooks/useStoredTasks';
 import { useTaskCompletion } from '@/hooks/useTaskCompletion';
+import { useTaskReminderSync } from '@/hooks/useTaskReminderSync';
 import { firstName } from '@/utils/auth';
 
 export default function HomeScreen() {
   const { user } = useSession();
   const { tasks, completions, loading, error, reload } = useStoredTasks();
   const signOut = useSignOut(tasks);
+  useTaskReminderSync(tasks, completions, loading);
   const { completingId, saveError, completeTask } = useTaskCompletion(reload);
 
   return (

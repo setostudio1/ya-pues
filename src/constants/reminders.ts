@@ -7,7 +7,7 @@ type ReminderText = {
   heading: string;
   lead: string;
   tail: string;
-  minutesBefore?: number;
+  minutesBefore: number;
 };
 
 export const SNOOZE_MINUTES = 10;
@@ -16,28 +16,29 @@ export const REMINDERS: Record<ReminderVariant, ReminderText> = {
   initial: {
     route: '/notification-1',
     label: 'Hora de empezar',
-    description: 'Llega 2 horas antes del plazo.',
+    description: 'Llega 24 horas antes del plazo, o 1 minuto después de crear una tarea con menos tiempo.',
     heading: 'HORAAAAA',
     lead: 'TIENES QUE HACER ',
     tail: '',
-    minutesBefore: 120,
+    minutesBefore: 24 * 60,
   },
   unstarted: {
     route: '/notification-2',
     label: '¿En serio?',
-    description: `Llega ${SNOOZE_MINUTES} minutos después de tocar Posponer.`,
+    description: `Llega 2 horas antes del plazo, o ${SNOOZE_MINUTES} minutos después de tocar Posponer.`,
     heading: '¿EN SERIO?',
     lead: '¿TODAVÍA NO HAS EMPEZADO A HACER ',
     tail: '?',
+    minutesBefore: 120,
   },
   urgent: {
     route: '/notification-3',
     label: 'Menos de 1 hora',
-    description: 'Llega 1 hora antes del plazo.',
+    description: 'Llega 45 minutos antes del plazo.',
     heading: 'MENOS DE\n1 HORA',
     lead: 'TU TAREA ',
     tail: ' ESTÁ POR VENCER.',
-    minutesBefore: 60,
+    minutesBefore: 45,
   },
   personal: {
     route: '/notification-4',

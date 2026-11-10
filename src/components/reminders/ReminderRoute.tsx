@@ -9,8 +9,14 @@ import { EXAMPLE_TASK_TITLE } from '@/constants/reminders';
 import { useSession } from '@/context/SessionContext';
 import { useStoredTasks } from '@/hooks/useStoredTasks';
 import { snoozeTaskReminder } from '@/notifications/taskReminders';
-import type { ReminderVariant } from '@/types/reminders';
+import type { ReminderResult, ReminderVariant } from '@/types/reminders';
 import { firstName } from '@/utils/auth';
+
+const SNOOZE_ERRORS: Partial<Record<ReminderResult, string>> = {
+  denied: 'Activa los permisos de notificaciones para posponer el aviso.',
+  disabled: 'Activa los avisos de tareas en Recordatorios para posponer.',
+  tooLate: 'Quedan menos de 10 minutos. No puedes posponer el aviso más allá del plazo.',
+};
 
 function goHome() {
   router.dismissTo('/');
@@ -39,9 +45,10 @@ export default function ReminderRoute({ variant }: { variant: ReminderVariant })
     if (!task) return;
     setBusy(true);
     setError('');
-    const result = await snoozeTaskReminder(task).catch(() => 'denied' as const);
+    const result = await snoozeTaskReminder(task).catch((): ReminderResult => 'denied');
     setBusy(false);
-    if (result === 'denied') setError('Activa los permisos de notificaciones para posponer el aviso.');
+    const snoozeError = SNOOZE_ERRORS[result];
+    if (snoozeError) setError(snoozeError);
     else goHome();
   }
 
