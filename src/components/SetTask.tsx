@@ -36,6 +36,9 @@ export default function SetTask({ value, intensity, onChange, onIntensityChange,
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: theme.colors.background },
   scrollContent: { flexGrow: 1 },
-  container: { flex: 1, width: '100%', maxWidth: 680, alignSelf: 'center', padding: theme.spacing.xl,
-    paddingBottom: theme.spacing.xxxl, gap: theme.spacing.xxl },
+  container: {
+    flex: 1,
+    padding: theme.spacing.xl,
+    gap: theme.spacing.lg,
+  },
 });

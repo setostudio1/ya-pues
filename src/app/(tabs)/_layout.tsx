@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
 
 import BottomNav from '../../components/BottomNav';
-import { colors } from '../../constants/colors';
+import { theme } from '../../constants/theme';
 
 export const unstable_settings = { anchor: 'index' };
 
@@ -12,9 +12,8 @@ export default function TabLayout() {
       tabBar={(props) => <BottomNav {...props} />}
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textMuted,
-        tabBarShowLabel: false,
+        tabBarActiveTintColor: theme.colors.primary,
+        tabBarInactiveTintColor: theme.colors.textMuted,
       }}
     >
       <Tabs.Screen name="index" options={{

@@ -1,5 +1,8 @@
+import * as Haptics from 'expo-haptics';
 import type { ComponentProps } from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
+import Animated from 'react-native-reanimated';
+
 import { theme } from '../constants/theme';
 
 type Props = ComponentProps<typeof Pressable> & {
@@ -7,38 +10,75 @@ type Props = ComponentProps<typeof Pressable> & {
   variant?: 'primary' | 'secondary';
 };
 
-export default function Button({ label, variant = 'primary', style, disabled, accessibilityState, ...props }: Props) {
+export default function Button({
+  label,
+  variant = 'primary',
+  style,
+  disabled,
+  accessibilityState,
+  onPress,
+  ...props
+}: Props) {
+  const handlePress = (event: any) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (onPress) {
+      onPress(event);
+    }
+  };
+
   return (
     <Pressable
       accessibilityRole="button"
       {...props}
+      onPress={handlePress}
       disabled={disabled}
       accessibilityState={{ ...accessibilityState, disabled: !!disabled }}
-      style={(state) => [
-        styles.button,
-        variant === 'secondary' && styles.secondary,
-        state.pressed && styles.pressed,
-        disabled && styles.disabled,
-        typeof style === 'function' ? style(state) : style,
-      ]}
     >
-      <Text style={[styles.label, variant === 'secondary' && styles.secondaryLabel]}>
-        {label}
-      </Text>
+      {(state) => (
+        <Animated.View
+          style={[
+            styles.button,
+            variant === 'secondary' && styles.secondary,
+            disabled && styles.disabled,
+            {
+              transform: [{ scale: state.pressed && !disabled ? 0.96 : 1 }],
+              transitionProperty: 'transform',
+              transitionDuration: 150,
+            },
+            typeof style === 'function' ? style(state) : style,
+          ]}
+        >
+          <Text style={[styles.label, variant === 'secondary' && styles.secondaryLabel]}>
+            {label}
+          </Text>
+        </Animated.View>
+      )}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    minHeight: 54, justifyContent: 'center', alignItems: 'center',
-    backgroundColor: theme.colors.primary, borderColor: theme.colors.primaryDark,
-    borderWidth: 0, borderBottomWidth: theme.border.buttonDepth,
-    paddingVertical: 14, paddingHorizontal: theme.spacing.xl, borderRadius: theme.radius.full,
+    minHeight: 48,
+    justifyContent: 'center',
+    backgroundColor: theme.colors.primary,
+    paddingVertical: theme.spacing.md,
+    paddingHorizontal: theme.spacing.xl,
+    borderRadius: theme.radius.md,
+    alignItems: 'center',
   },
-  pressed: { transform: [{ translateY: 1 }], opacity: 0.85 },
-  secondary: { backgroundColor: theme.colors.card, borderColor: theme.colors.border, borderWidth: 1, borderBottomWidth: 1 },
-  disabled: { backgroundColor: theme.colors.disabled, borderColor: theme.colors.disabled, opacity: 0.6 },
-  secondaryLabel: { color: theme.colors.textMutedStrong },
-  label: { ...theme.typography.label, fontSize: theme.text.body, lineHeight: 24, textAlign: 'center', color: theme.colors.card },
+  secondary: {
+    backgroundColor: theme.colors.primarySoft,
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+  secondaryLabel: {
+    color: theme.colors.primary,
+  },
+  label: {
+    fontSize: theme.text.body,
+    fontWeight: 'bold',
+    color: theme.colors.card,
+  },
 });
