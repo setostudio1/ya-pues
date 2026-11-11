@@ -20,7 +20,7 @@ export default function AuthScreen({ title, subtitle, showBackButton = false, hi
     <Screen centered narrow>
       {showBackButton && <BackButton fallbackHref={ROUTES.startPage} />}
       <Animated.View entering={FadeInDown.duration(400)} style={styles.hero}>
-        <Image source={require('@/assets/images/icon.png')} style={styles.mascot}
+        <Image source={require('@/assets/images/streak/mascot.png')} style={styles.mascot}
           resizeMode="contain" accessible={false} />
         <Text accessibilityRole="header" style={[styles.title, highlightTitle && styles.highlightTitle]}>
           {title}
