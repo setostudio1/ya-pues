@@ -2,6 +2,7 @@ import { Link } from 'expo-router';
 
 import Button from '@/components/ui/Button';
 import InputField from '@/components/ui/InputField';
+import { ROUTES } from '@/constants/routes';
 import type { SignatureMode, TaskDraft } from '@/types/tasks';
 
 type Props = {
@@ -23,7 +24,7 @@ export default function SignatureFields({ mode, draft, disabled, onChange }: Pro
           placeholder="https://…" keyboardType="url" maxLength={2048} autoCapitalize="none" autoCorrect={false}
           editable={!disabled} onChangeText={(signatureImageUri) => onChange({ signatureImageUri })} />
       )}
-      <Link href={{ pathname: '/sign', params: { mode: otherMode } }} replace asChild>
+      <Link href={{ pathname: ROUTES.sign, params: { mode: otherMode } }} replace asChild>
         <Button label={mode === 'image' ? 'Firmar con mi nombre' : 'Usar una imagen de mi firma'}
           variant="secondary" disabled={disabled} />
       </Link>

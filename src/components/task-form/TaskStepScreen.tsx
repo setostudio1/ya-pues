@@ -1,18 +1,18 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import StepLabel from '@/components/task-form/StepLabel';
 import BackButton from '@/components/ui/BackButton';
 import Button from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/DataState';
 import Screen from '@/components/ui/Screen';
-import ScreenHeader from '@/components/ui/ScreenHeader';
 import { theme } from '@/constants/theme';
 
 type Props = {
   step: string;
   title: string;
   description?: string;
-  swipeHint?: string;
+  caption?: string;
   buttonLabel?: string;
   busy?: boolean;
   error?: string;
@@ -21,17 +21,17 @@ type Props = {
 };
 
 export default function TaskStepScreen({
-  step, title, description, swipeHint, buttonLabel = 'Continuar', busy = false, error, onContinue, children,
+  step, title, description, caption, buttonLabel = 'Establecer', busy = false, error, onContinue, children,
 }: Props) {
   return (
     <Screen>
       <BackButton />
-      <ScreenHeader subtitle={step} title={title} description={description} centered />
+      <StepLabel step={step} title={title} description={description} />
       <View style={styles.body}>{children}</View>
-      {swipeHint && (
+      {caption && (
         <View style={styles.hint}>
           <Text style={styles.hintTitle}>Desliza</Text>
-          <Text style={styles.hintText}>{swipeHint}</Text>
+          <Text style={styles.hintText}>{caption}</Text>
         </View>
       )}
       {!!error && <ErrorState message={error} />}

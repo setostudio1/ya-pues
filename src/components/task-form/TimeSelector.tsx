@@ -1,19 +1,17 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import WheelPicker from '@/components/task-form/WheelPicker';
+import DatePickerColumn from '@/components/task-form/DatePickerColumn';
+import { HOURS, MINUTES } from '@/constants/tasks';
 import { theme } from '@/constants/theme';
 import { isTime } from '@/utils/tasks';
-
-const HOURS = Array.from({ length: 24 }, (_, index) => String(index).padStart(2, '0'));
-const MINUTES = Array.from({ length: 60 }, (_, index) => String(index).padStart(2, '0'));
 
 export default function TimeSelector({ value, onChange }: { value: string; onChange: (time: string) => void }) {
   const [hour, minute] = (isTime(value) ? value : '12:00').split(':');
   return (
     <View style={styles.picker}>
-      <WheelPicker items={HOURS} value={hour} label="Hora" onChange={(next) => onChange(`${next}:${minute}`)} />
+      <DatePickerColumn items={HOURS} value={hour} label="Hora" onChange={(next) => onChange(`${next}:${minute}`)} />
       <Text style={styles.separator}>:</Text>
-      <WheelPicker items={MINUTES} value={minute} label="Minuto" onChange={(next) => onChange(`${hour}:${next}`)} />
+      <DatePickerColumn items={MINUTES} value={minute} label="Minuto" onChange={(next) => onChange(`${hour}:${next}`)} />
     </View>
   );
 }

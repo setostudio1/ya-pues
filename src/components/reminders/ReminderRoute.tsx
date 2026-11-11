@@ -6,14 +6,21 @@ import Button from '@/components/ui/Button';
 import { EmptyState, LoadingState } from '@/components/ui/DataState';
 import RouteScreen from '@/components/ui/RouteScreen';
 import { EXAMPLE_TASK_TITLE } from '@/constants/reminders';
+import { ROUTES } from '@/constants/routes';
 import { useSession } from '@/context/SessionContext';
 import { useStoredTasks } from '@/hooks/useStoredTasks';
-import { snoozeTaskReminder } from '@/notifications/reminders';
-import type { ReminderVariant } from '@/types/reminders';
+import { snoozeTaskReminder } from '@/notifications/taskReminders';
+import type { ReminderResult, ReminderVariant } from '@/types/reminders';
 import { firstName } from '@/utils/auth';
 
+const SNOOZE_ERRORS: Partial<Record<ReminderResult, string>> = {
+  denied: 'Activa los permisos de notificaciones para posponer el aviso.',
+  disabled: 'Activa los avisos de tareas en Recordatorios para posponer.',
+  tooLate: 'Quedan menos de 10 minutos. No puedes posponer el aviso más allá del plazo.',
+};
+
 function goHome() {
-  router.dismissTo('/');
+  router.dismissTo(ROUTES.home);
 }
 
 function close() {
@@ -33,20 +40,21 @@ export default function ReminderRoute({ variant }: { variant: ReminderVariant })
 
   async function snooze() {
     if (isPreview) {
-      router.push({ pathname: '/notification-2', params: { preview: '1' } });
+      router.push({ pathname: ROUTES.reminderUnstarted, params: { preview: '1' } });
       return;
     }
     if (!task) return;
     setBusy(true);
     setError('');
-    const result = await snoozeTaskReminder(task).catch(() => 'denied' as const);
+    const result = await snoozeTaskReminder(task).catch((): ReminderResult => 'denied');
     setBusy(false);
-    if (result === 'denied') setError('Activa los permisos de notificaciones para posponer el aviso.');
+    const snoozeError = SNOOZE_ERRORS[result];
+    if (snoozeError) setError(snoozeError);
     else goHome();
   }
 
   function continueTask() {
-    if (isPreview) router.push({ pathname: '/notification-4', params: { preview: '1' } });
+    if (isPreview) router.push({ pathname: ROUTES.reminderPersonal, params: { preview: '1' } });
     else goHome();
   }
 

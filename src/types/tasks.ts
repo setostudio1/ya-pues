@@ -19,9 +19,15 @@ export type Task = {
   signatureImageUri: string;
   createdAt: string;
   companions?: TaskCompanion[];
+  ownerId?: string;
+  archivedAt?: string;
 };
 
-export type TaskDraft = Omit<Task, 'createdAt'>;
+export type TaskDraft = Omit<Task, 'createdAt' | 'ownerId' | 'archivedAt'>;
+
+export type TaskUpdate = Pick<TaskDraft, 'title' | 'dueDate' | 'dueTime' | 'intensity'>;
+
+export type TaskStatus = 'pending' | 'overdue' | 'completed' | 'completedLate';
 
 export type TaskCompletion = {
   id: string;

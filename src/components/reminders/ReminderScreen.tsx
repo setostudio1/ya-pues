@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   topArtwork: { width: '86%', height: undefined, aspectRatio: 1, alignSelf: 'center' },
   bottomArtwork: { flexGrow: 1, minHeight: 360 },
   copy: { alignItems: 'center', paddingHorizontal: theme.spacing.xl, gap: theme.spacing.sm },
-  heading: { ...theme.typography.display, fontSize: 48, lineHeight: 56, color: theme.colors.primary, textAlign: 'center' },
+  heading: { ...theme.typography.display, fontSize: theme.text.reminderHeading, lineHeight: 56, color: theme.colors.primary, textAlign: 'center' },
   message: { ...theme.typography.label, maxWidth: 310, fontSize: theme.text.body, lineHeight: 22,
     color: theme.colors.primary, textAlign: 'center' },
   taskTitle: { fontWeight: '700', fontStyle: 'italic' },

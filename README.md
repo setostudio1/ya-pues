@@ -1,80 +1,79 @@
 ﻿# Ya pues
 
-App para comprometerte con tus tareas: eliges la fecha y hora límite, describes la tarea, eliges
-cómo vas a demostrar que la hiciste y firmas tu compromiso. La app te avisa antes del plazo y
-lleva tu racha de días cumpliendo tareas.
-
-Diseño en [Figma](https://www.figma.com/design/nNOZmFF0M4viYBKPr4a6PX/Ya-pues?node-id=0-1).
+App para estudiantes que postergan: firmas un compromiso con fecha y hora límite, la app te avisa
+cada vez con más urgencia y te ayuda a formar el hábito de cumplir a tiempo, con una racha diaria.
 
 ## Cómo correrla
 
-Necesitas Node.js 22 o superior y la app **Expo Go** (SDK 58) en el celular.
-
 ```sh
 npm install
-npx expo start -c
+npx expo start
 ```
 
-Escanea el código QR con Expo Go. Si el celular no está en la misma red Wi-Fi que la computadora,
-usa `npx expo start --tunnel -c`. Las notificaciones solo funcionan en el celular.
-
-## Qué incluye
-
-| Tema | Dónde está |
-| --- | --- |
-| Navegación | Expo Router: pestañas Inicio/Racha y rutas protegidas por sesión (`src/app/_layout.tsx`) |
-| Estado | `SessionContext` (usuario) y `TaskDraftContext` (la tarea mientras se crea) |
-| Persistencia | AsyncStorage para cuentas, sesión, tareas y tareas completadas (`src/storage/`) |
-| Notificaciones | Avisos 2 h, 1 h y 15 min antes del plazo, posponer 10 min y recordatorio diario (`src/notifications/`) |
-| Animaciones | Entrada de las pantallas de acceso y de las tarjetas; el botón se achica al tocarlo y vibra |
-| Cuentas | Registro e inicio de sesión guardados en el celular; la contraseña se guarda con hash SHA-256 |
-| Estados de pantalla | Cargando, vacío y error con botón Reintentar (`src/components/ui/DataState.tsx`) |
-
-Flujo: Acceso → Iniciar sesión / Crear cuenta → Bienvenida → Inicio. Con el botón **+** se crea una
-tarea en 5 pasos (fecha, hora, tarea, evidencia y firma). Desde **Racha → Ver recordatorios** se
-prueba un aviso y se ven las 4 pantallas de aviso.
+Abre la app en el celular con **Expo Go (SDK 58)**. En el navegador (`npx expo start --web`) los avisos
+se muestran como un banner dentro de la app, con sonido y vibración si el dispositivo lo permite.
+Si cambiaste de versión o de rama, usa `npx expo start --clear`.
 
 ## Cómo está organizado el código
 
 ```
 src/
-├── app/            Pantallas. Cada archivo es una ruta y solo junta sus componentes
+├── app/                 Solo pantallas (Expo Router). La carpeta define la ruta.
+│   ├── (auth)/          Acceso, inicio de sesión y registro: /start-page, /login, /register.
+│   ├── (new-task)/      Crear tarea paso a paso: /set-date, /set-time, /set-task, /set-proof, /sign.
+│   ├── (reminders)/     Avisos 1–4 y configuración: /notification-1…4, /reminders-preview.
+│   ├── (tabs)/          Inicio, Racha y Tarea creada, con la barra inferior.
+│   ├── edit-task/[id]   Editar una tarea pendiente o vencida.
+│   └── welcome.tsx      Bienvenida después de entrar.
 ├── components/
-│   ├── ui/         Piezas reutilizables: Screen, Button, InputField, DataState, BottomNav…
-│   ├── auth/       Acceso, inicio de sesión y registro
-│   ├── home/       Inicio: saludo, racha semanal, lista de tareas y recordatorios
-│   ├── streak/     Racha: mascota con los días y progreso
-│   ├── task-form/  Los 5 pasos para crear una tarea
-│   └── reminders/  Pantallas de aviso y configuración de avisos
-├── constants/      Colores, tema y textos de los avisos
-├── context/        Estado compartido: sesión y tarea en creación
-├── hooks/          Lógica reutilizable: cargar tareas, completar tareas, enviar formularios de acceso
-├── notifications/  Permisos, programar y cancelar avisos, abrir la pantalla al tocar un aviso
-├── storage/        Guardar y leer con AsyncStorage: tareas (data.ts) y cuentas (accounts.ts)
-├── styles/         CSS para la web (fuente y márgenes seguros)
-├── types/          Tipos de TypeScript
-└── utils/          Funciones de apoyo: validaciones, fechas y cálculo de la racha
+│   ├── ui/              Piezas reutilizables: Button, BackButton, Screen, InputField, BottomNav…
+│   ├── auth/            Formularios de acceso.
+│   ├── home/            Inicio: saludo, racha semanal, tarjetas de tareas y sus acciones.
+│   ├── streak/          Racha: mascota con los días y progreso.
+│   ├── task-form/       Vistas de Figma SetDate, SetTime, SetTask, EditTask y sus piezas.
+│   └── reminders/       Pantallas de aviso, banner web y configuración de recordatorios.
+├── constants/           Todo lo que se cambia a mano:
+│   ├── colors.ts        Colores.
+│   ├── typography.ts    Fuente, tamaños de letra y estilos de texto.
+│   ├── spacing.ts       Espacios, bordes redondeados y grosores.
+│   ├── layout.ts        Ancho máximo, sombras y dirección (fila o columna) de los contenedores.
+│   ├── routes.ts        Todas las rutas de la app.
+│   ├── tasks.ts         Textos de intensidad y evidencia, meses, días y largo del título.
+│   ├── reminders.ts     Textos, tiempos, sonidos y colores de los avisos.
+│   └── theme.ts         Junta todo lo anterior en `theme`.
+├── context/             Estado compartido: sesión y tarea en creación.
+├── hooks/               Cargar tareas, completarlas o borrarlas, cerrar sesión y reprogramar avisos.
+├── notifications/       Permisos, avisos por tarea y simulador de avisos para la web.
+├── storage/             Guardar y leer con AsyncStorage: tareas, cuentas y preferencias.
+├── styles/              CSS para la web.
+├── types/               Tipos de TypeScript.
+└── utils/               Validaciones, fechas y cálculo de la racha.
 ```
 
-Ninguna pantalla usa AsyncStorage directamente: todo pasa por `src/storage/`. Los colores salen
-de `src/constants/colors.ts`.
+Ninguna pantalla usa AsyncStorage directamente: todo pasa por `src/storage/` y por el módulo de
+notificaciones. Los estilos usan `StyleSheet` con valores de `src/constants/`.
 
-### Quién hizo cada parte
+### Quién hizo cada vista
 
-| Parte | Integrante (GitHub) |
-| --- | --- |
-| Estructura inicial, Inicio, pasos para crear una tarea, diseño visual, invitar compañeros, Racha y pantallas de aviso | setostudio1 |
-| Pestañas y rutas, guardado de tareas, notificaciones, animaciones, acceso / registro / sesión y organización del código | sofiaterrazas-cyber |
+Integrantes: **Sofía Terrazas** (`sofiaterrazas-cyber`) y **SETO Studio** (`setostudio1`).
+Todas las rutas se crearon en `78dc917` (SETO Studio); después cada integrante desarrolló estas partes:
+
+| Vista (Figma) | Ruta | SETO Studio | Sofía Terrazas |
+| --- | --- | --- | --- |
+| Inicio | `/` | Lista de tareas, completar tareas y rediseño visual (`f20dcfe`, `775af3e`) | Saludo con nombre, cerrar sesión y tareas por cuenta (PR #20); tareas vencidas, eliminar y archivar |
+| Racha | `/streak` | Cálculo de progreso y pantalla de perfil (`f20dcfe`, `a836d18`) | Organización en componentes (PR #20) |
+| Set Date / Set Time / Set Task | `/set-date`, `/set-time`, `/set-task` | Vistas SetDate, SetTime, SetTask, DatePickerColumn, FillForm y SetIntensity (`f20dcfe`, `9d9efbb`) | Validaciones y conexión con el borrador (PR #20) |
+| La evidencia / Firma | `/set-proof`, `/sign` | Pantallas, guardado al firmar y bloqueo de doble guardado (`f20dcfe`) | Guardar la tarea en el primer flujo (PR #14) y avisos al firmar (PR #20) |
+| Editar tarea | `/edit-task/[id]` | — | Pantalla EditTask y reprogramación de avisos |
+| Tarea creada | `/task-created` | Confirmación con regreso a Inicio (`78dc917`) | Animación de recompensa y NotifyCard |
+| Acceso / Login / Registro / Bienvenida | `/start-page`, `/login`, `/register`, `/welcome` | Rutas iniciales (`78dc917`) | Pantallas, cuentas y sesión (PR #18, #20) |
+| Avisos 1–4 y Recordatorios | `/notification-1…4`, `/reminders-preview` | Pantallas ilustradas, tiempos y posponer (PR #19) | Módulo de notificaciones y recordatorio diario (PR #15) |
+| Avisos en la web | — | — | Banner, sonido y vibración (WebNotificationBanner) |
+| Barra inferior y botón | — | BottomNav con botón + (`515dc82`, PR #11) | Animación y háptica del botón (PR #16) |
 
 ## Cambio de requisito
 
-No cambiamos ningún requisito base.
-
-## Revisar el código
-
-```sh
-npx expo lint
-npx tsc --noEmit
-```
-
-La fuente Nunito (`public/fonts/`) tiene licencia SIL Open Font License (`public/fonts/OFL.txt`).
+No reemplazamos ningún requisito base: la app tiene navegación, estado, formularios, persistencia,
+notificaciones y animaciones. Sobre el alcance: en el paso “La evidencia” el usuario elige cómo
+demostrará la tarea (foto, video o timelapse), pero la app todavía no captura ni sube esa evidencia.
+Usar la cámara queda pendiente para una siguiente versión.

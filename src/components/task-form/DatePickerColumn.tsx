@@ -13,7 +13,7 @@ type Props = {
 
 const ITEM_HEIGHT = 64;
 
-export default function WheelPicker({ items, initialIndex = 0, value, label = 'Valor', onChange }: Props) {
+export default function DatePickerColumn({ items, initialIndex = 0, value, label = 'Valor', onChange }: Props) {
   const clamp = (index: number) => Math.max(0, Math.min(index, items.length - 1));
   const initial = clamp(value === undefined ? initialIndex : items.indexOf(value));
   const [localIndex, setLocalIndex] = useState(initial);
@@ -105,6 +105,6 @@ const styles = StyleSheet.create({
   selectedBox: { position: 'absolute', top: ITEM_HEIGHT, left: 0, right: 0, height: ITEM_HEIGHT,
     backgroundColor: theme.colors.card, borderRadius: theme.radius.md, borderWidth: 1, borderColor: theme.colors.cardDepth },
   item: { height: ITEM_HEIGHT, alignItems: 'center', justifyContent: 'center' },
-  text: { ...theme.typography.body, fontSize: 26, lineHeight: 42, color: theme.colors.textMuted, fontVariant: ['tabular-nums'] },
-  selectedText: { ...theme.typography.title, color: theme.colors.text, fontSize: 32 },
+  text: { ...theme.typography.body, fontSize: theme.text.wheel, lineHeight: 42, color: theme.colors.textMuted, fontVariant: ['tabular-nums'] },
+  selectedText: { ...theme.typography.title, color: theme.colors.text, fontSize: theme.text.wheelSelected },
 });

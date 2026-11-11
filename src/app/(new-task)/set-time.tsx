@@ -1,10 +1,9 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 
-import TaskStepScreen from '@/components/task-form/TaskStepScreen';
-import TimeSelector from '@/components/task-form/TimeSelector';
+import SetTime from '@/components/task-form/SetTime';
+import { ROUTES } from '@/constants/routes';
 import { useTaskDraft } from '@/context/TaskDraftContext';
-import { requestPermission } from '@/notifications/reminders';
 import { isDateKey, isTime } from '@/utils/tasks';
 
 function isFutureDeadline(dueDate: string, dueTime: string) {
@@ -16,19 +15,16 @@ export default function SetTimeScreen() {
   const { draft, updateDraft } = useTaskDraft();
   const [error, setError] = useState('');
 
-  async function continueToTask() {
+  function continueToTask() {
     if (!isFutureDeadline(draft.dueDate, draft.dueTime)) {
       setError('Elige una hora futura. Si hace falta, vuelve al paso anterior para cambiar la fecha.');
       return;
     }
-    await requestPermission().catch(() => undefined);
-    router.push('/set-task');
+    router.push(ROUTES.setTask);
   }
 
   return (
-    <TaskStepScreen step="Paso 2 · Hora límite" title="¿A qué hora tiene que estar hecha esta tarea?"
-      swipeHint="Para cambiar la hora" buttonLabel="Establecer" error={error} onContinue={continueToTask}>
-      <TimeSelector value={draft.dueTime} onChange={(dueTime) => { updateDraft({ dueTime }); setError(''); }} />
-    </TaskStepScreen>
+    <SetTime value={draft.dueTime} error={error} onContinue={continueToTask}
+      onChange={(dueTime) => { updateDraft({ dueTime }); setError(''); }} />
   );
 }

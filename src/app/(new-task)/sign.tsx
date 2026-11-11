@@ -3,14 +3,18 @@ import { useRef, useState } from 'react';
 
 import SignatureFields from '@/components/task-form/SignatureFields';
 import TaskStepScreen from '@/components/task-form/TaskStepScreen';
+import { ROUTES } from '@/constants/routes';
+import { PROOF_LABELS } from '@/constants/tasks';
+import { useSession } from '@/context/SessionContext';
 import { useTaskDraft } from '@/context/TaskDraftContext';
-import { scheduleTaskReminders } from '@/notifications/reminders';
+import { scheduleTaskReminders } from '@/notifications/taskReminders';
 import { addTask } from '@/storage/data';
-import { PROOF_LABELS, TaskValidationError } from '@/utils/tasks';
+import { TaskValidationError } from '@/utils/tasks';
 
 export default function SignScreen() {
   const params = useLocalSearchParams<{ mode?: string }>();
   const mode = params.mode === 'image' ? 'image' : 'signature';
+  const { user } = useSession();
   const { draft, updateDraft, resetDraft } = useTaskDraft();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -22,10 +26,10 @@ export default function SignScreen() {
     setSaving(true);
     setError('');
     try {
-      const task = await addTask({ ...draft, signatureMode: mode });
+      const task = await addTask({ ...draft, signatureMode: mode }, user?.id);
       await scheduleTaskReminders(task).catch(() => undefined);
       resetDraft();
-      router.replace({ pathname: '/task-created', params: { taskId: task.id } });
+      router.dismissTo({ pathname: ROUTES.taskCreated, params: { taskId: task.id } });
     } catch (cause) {
       setError(cause instanceof TaskValidationError
         ? cause.message
@@ -37,7 +41,7 @@ export default function SignScreen() {
   }
 
   return (
-    <TaskStepScreen step="Último paso · El compromiso" title="Firma tu compromiso"
+    <TaskStepScreen step="Último paso - El compromiso" title="Firma tu compromiso"
       description={`Me comprometo a ${draft.title || 'completar mi tarea'} antes del ${draft.dueDate} a las ${draft.dueTime}. Evidencia: ${PROOF_LABELS[draft.proofType]}.`}
       buttonLabel={saving ? 'Guardando…' : 'Firmar y guardar tarea'} busy={saving} error={error} onContinue={signTask}>
       <SignatureFields mode={mode} draft={draft} disabled={saving} onChange={updateDraft} />

@@ -14,6 +14,7 @@ export default function TabLayout() {
   return (
     <Tabs
       tabBar={(props) => <BottomNav {...props} />}
+      backBehavior="initialRoute"
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: theme.colors.primary,
@@ -28,6 +29,7 @@ export default function TabLayout() {
         title: 'Racha',
         tabBarIcon: ({ color, size }) => <Ionicons name="person" color={iconColor(color)} size={size} />,
       }} />
+      <Tabs.Screen name="task-created" options={{ title: 'Tarea creada' }} />
     </Tabs>
   );
 }

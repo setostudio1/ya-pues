@@ -1,7 +1,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router } from 'expo-router';
+import { Link } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { ROUTES } from '@/constants/routes';
 import { theme } from '@/constants/theme';
 import type { Task } from '@/types/tasks';
 
@@ -18,20 +19,20 @@ export default function HomeReminders({ tasks, completedIds }: {
       </View>
       <View style={styles.cards}>
         {reminders.map((task) => (
-          <Pressable key={task.id} accessibilityRole="button" accessibilityLabel={`Abrir recordatorio de ${task.title}`}
-            onPress={() => router.push({ pathname: '/notification-1', params: { taskId: task.id } })}
-            style={({ pressed }) => [styles.card, pressed && styles.pressed]}>
-            <View style={styles.icon}>
-              <Ionicons name="calendar" size={24} color={theme.colors.primary} accessible={false} />
-            </View>
-            <View style={styles.copy}>
-              <Text style={styles.taskTitle}>{task.title}</Text>
-              <View style={styles.deadline}>
-                <Ionicons name="time" size={14} color={theme.colors.card} accessible={false} />
-                <Text style={styles.deadlineText}>{task.dueDate.split('-').reverse().join('/')} · {task.dueTime}</Text>
+          <Link key={task.id} href={{ pathname: ROUTES.reminderInitial, params: { taskId: task.id } }} asChild>
+            <Pressable accessibilityRole="button" accessibilityLabel={`Abrir recordatorio de ${task.title}`} style={styles.card}>
+              <View style={styles.icon}>
+                <Ionicons name="calendar" size={24} color={theme.colors.primary} accessible={false} />
               </View>
-            </View>
-          </Pressable>
+              <View style={styles.copy}>
+                <Text style={styles.taskTitle}>{task.title}</Text>
+                <View style={styles.deadline}>
+                  <Ionicons name="time" size={14} color={theme.colors.card} accessible={false} />
+                  <Text style={styles.deadlineText}>{task.dueDate.split('-').reverse().join('/')} · {task.dueTime}</Text>
+                </View>
+              </View>
+            </Pressable>
+          </Link>
         ))}
         {reminders.length === 0 && <Text style={styles.caption}>No tienes tareas pendientes.</Text>}
       </View>
@@ -44,10 +45,9 @@ const styles = StyleSheet.create({
   heading: { gap: theme.spacing.xs },
   title: { ...theme.typography.heading, color: theme.colors.text, fontSize: theme.text.body, lineHeight: 24 },
   caption: { ...theme.typography.body, color: theme.colors.textMutedStrong, fontSize: theme.text.caption, lineHeight: 20 },
-  cards: { gap: theme.spacing.md },
+  cards: { flexDirection: theme.directions.homeReminderCards, gap: theme.spacing.md },
   card: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.md, minHeight: 72,
     backgroundColor: theme.colors.primary, borderRadius: theme.radius.sm, padding: theme.spacing.sm },
-  pressed: { opacity: 0.85 },
   icon: { width: 48, height: 48, borderRadius: theme.radius.sm, backgroundColor: theme.colors.primarySoft,
     alignItems: 'center', justifyContent: 'center' },
   copy: { flex: 1, minWidth: 0, gap: theme.spacing.xs, paddingVertical: theme.spacing.xs },
