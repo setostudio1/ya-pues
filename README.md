@@ -1,11 +1,11 @@
 ﻿# Ya pues
 
-App para estudiantes que postergan: firmas un compromiso con fecha y hora límite, la app te avisa
+App de organización honesta: firmas un compromiso con fecha y hora límite, la app te avisa
 cada vez con más urgencia y te ayuda a formar el hábito de cumplir a tiempo, con una racha diaria.
 
 ## Cómo correrla
 
-```sh
+```
 npm install
 npx expo start
 ```
@@ -71,9 +71,4 @@ Todas las rutas se crearon en `78dc917` (SETO Studio); después cada integrante 
 | Avisos en la web | — | — | Banner, sonido y vibración (WebNotificationBanner) |
 | Barra inferior y botón | — | BottomNav con botón + (`515dc82`, PR #11) | Animación y háptica del botón (PR #16) |
 
-## Cambio de requisito
-
-No reemplazamos ningún requisito base: la app tiene navegación, estado, formularios, persistencia,
-notificaciones y animaciones. Sobre el alcance: en el paso “La evidencia” el usuario elige cómo
-demostrará la tarea (foto, video o timelapse), pero la app todavía no captura ni sube esa evidencia.
 Usar la cámara queda pendiente para una siguiente versión.
