@@ -14,6 +14,7 @@ export default function TabLayout() {
   return (
     <Tabs
       tabBar={(props) => <BottomNav {...props} />}
+      backBehavior="initialRoute"
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: theme.colors.primary,

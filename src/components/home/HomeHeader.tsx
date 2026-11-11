@@ -1,5 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
+import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { theme } from '@/constants/theme';
@@ -9,7 +10,15 @@ type Props = {
   onSignOut: () => void;
 };
 
+function greetingFor(hour: number) {
+  if (hour < 12) return 'Buen día';
+  if (hour < 19) return 'Buenas tardes';
+  return 'Buenas noches';
+}
+
 export default function HomeHeader({ name, onSignOut }: Props) {
+  const [greeting] = useState(() => greetingFor(new Date().getHours()));
+
   return (
     <View style={styles.container}>
       <Pressable accessibilityRole="button" accessibilityLabel="Cerrar sesión" hitSlop={8} onPress={onSignOut}
@@ -19,7 +28,7 @@ export default function HomeHeader({ name, onSignOut }: Props) {
       </Pressable>
       <View style={styles.greetingRow}>
         <View style={styles.greetingCopy}>
-          <Text accessibilityRole="header" style={styles.greeting}>Buen día, {name}</Text>
+          <Text accessibilityRole="header" style={styles.greeting}>{greeting}, {name}</Text>
           <Text style={styles.question}>¿Qué tienes que hacer hoy?</Text>
         </View>
         <Image source={require('@/assets/images/home/mascot.png')}
