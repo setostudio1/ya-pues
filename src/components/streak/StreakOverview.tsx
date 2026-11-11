@@ -6,21 +6,25 @@ import type { calculateProgress } from '@/utils/tasks';
 
 type Progress = ReturnType<typeof calculateProgress>;
 
+function countLabel(count: number, singular: string, plural: string) {
+  return `${count} ${count === 1 ? singular : plural}`;
+}
+
 export default function StreakOverview({ progress }: { progress: Progress }) {
   return (
     <>
-      <Text style={styles.text}>{progress.todayCount} tareas completadas hoy</Text>
+      <Text style={styles.text}>{countLabel(progress.todayCount, 'tarea completada', 'tareas completadas')} hoy</Text>
       {progress.completed === 0 && <EmptyState message="Completa tu primera tarea desde Inicio para comenzar tu racha." />}
       <View style={styles.card}>
         <Text accessibilityRole="header" style={styles.heading}>Progreso total</Text>
         <Text style={styles.text}>
-          {progress.completed} de {progress.total} tareas completadas · {progress.percentage}%
+          {progress.completed} de {countLabel(progress.total, 'tarea completada', 'tareas completadas')} · {progress.percentage}%
         </Text>
         <View accessibilityRole="progressbar" accessibilityLabel="Tareas completadas"
           accessibilityValue={{ min: 0, max: 100, now: progress.percentage }} style={styles.track}>
           <View style={[styles.fill, { width: `${progress.percentage}%` }]} />
         </View>
-        <Text style={styles.text}>{progress.pending} pendientes</Text>
+        <Text style={styles.text}>{countLabel(progress.pending, 'pendiente', 'pendientes')}</Text>
       </View>
       <View style={styles.card}>
         <Text accessibilityRole="header" style={styles.heading}>Últimos 7 días</Text>
@@ -28,7 +32,7 @@ export default function StreakOverview({ progress }: { progress: Progress }) {
           {progress.week.map((day) => (
             <View key={day.date} style={[styles.day, day.count > 0 && styles.activeDay]}>
               <Text style={styles.text}>{day.date.slice(8)}/{day.date.slice(5, 7)}</Text>
-              <Text accessibilityLabel={`${day.count} tareas el ${day.date}`} style={styles.count}>{day.count}</Text>
+              <Text accessibilityLabel={`${countLabel(day.count, 'tarea', 'tareas')} el ${day.date}`} style={styles.count}>{day.count}</Text>
             </View>
           ))}
         </View>

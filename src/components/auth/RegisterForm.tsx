@@ -19,6 +19,7 @@ const EMPTY_FORM: RegistrationInput = { name: '', email: '', password: '', confi
 
 export default function RegisterForm({ submitting, error, onSubmit, onChange }: Props) {
   const [form, setForm] = useState(EMPTY_FORM);
+  const isComplete = Object.values(form).every((value) => value.trim() !== '');
 
   function update(field: keyof RegistrationInput, value: string) {
     setForm((previous) => ({ ...previous, [field]: value }));
@@ -38,9 +39,9 @@ export default function RegisterForm({ submitting, error, onSubmit, onChange }: 
       <InputField label="Confirmar contraseña" placeholder="Repite tu contraseña" secureTextEntry
         autoComplete="new-password" textContentType="newPassword" editable={!submitting}
         value={form.confirmPassword} onChangeText={(value) => update('confirmPassword', value)}
-        onSubmitEditing={() => onSubmit(form)} />
+        onSubmitEditing={() => { if (isComplete) onSubmit(form); }} />
       {!!error && <ErrorState message={error} />}
-      <Button label={submitting ? 'Creando cuenta…' : 'Crear cuenta'} disabled={submitting}
+      <Button label={submitting ? 'Creando cuenta…' : 'Crear cuenta'} disabled={submitting || !isComplete}
         accessibilityState={{ busy: submitting }} onPress={() => onSubmit(form)} />
     </View>
   );
