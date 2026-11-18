@@ -15,7 +15,7 @@ export function CompanionAvatar({ companion, size = 32 }: { companion: TaskCompa
       style={[styles.avatar, { width: size, height: size }]}>
       <Text accessible={false} style={[styles.initials, { fontSize: size * 0.36 }]}>{companionInitials(companion.email)}</Text>
       {!!avatarUri && failedUri !== avatarUri && <Image source={{ uri: avatarUri }} contentFit="cover"
-        recyclingKey={companion.email} accessible={false} style={StyleSheet.absoluteFill}
+        recyclingKey={companion.email} accessible={false} accessibilityLabel="" style={StyleSheet.absoluteFill}
         onError={() => setFailedUri(avatarUri)} />}
     </View>
   );

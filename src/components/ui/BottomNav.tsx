@@ -2,12 +2,13 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Link } from 'expo-router';
 import type { BottomTabBarProps } from 'expo-router/js-tabs';
 import { Fragment } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { ROUTES } from '@/constants/routes';
 import { theme } from '@/constants/theme';
 
 const HIDDEN_ROUTES = ['task-created'];
+const IS_WEB = Platform.OS === 'web';
 
 export default function BottomNav({ state, descriptors, emitter, navigateToTab, insets }: BottomTabBarProps) {
   const routes = state.routes.filter((route) => !HIDDEN_ROUTES.includes(route.name));
@@ -37,8 +38,10 @@ export default function BottomNav({ state, descriptors, emitter, navigateToTab, 
                 </Link>
               )}
               <Pressable
-                accessibilityRole="tab"
-                accessibilityState={{ selected: focused }}
+                // Web has no tablist parent here (the add button sits between tabs), so expose plain links there.
+                accessibilityRole={IS_WEB ? 'link' : 'tab'}
+                accessibilityState={IS_WEB ? undefined : { selected: focused }}
+                {...(IS_WEB && focused ? { 'aria-current': 'page' } : {})}
                 accessibilityLabel={options.tabBarAccessibilityLabel ?? options.title ?? route.name}
                 onPress={() => {
                   const event = emitter.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });

@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Crypto from 'expo-crypto';
+import { Platform } from 'react-native';
 
 import type { Account, LoginInput, RegistrationInput, User } from '@/types/auth';
 import { AuthError, normalizeEmail, toUser, validateLogin, validateRegistration } from '@/utils/auth';
@@ -54,6 +55,25 @@ export async function signInWithPassword(input: LoginInput): Promise<User> {
 export async function loadSession(): Promise<User | null> {
   const saved = await AsyncStorage.getItem(SESSION_KEY);
   return saved === null ? null : JSON.parse(saved);
+}
+
+/**
+ * Web-only synchronous read of the same key AsyncStorage uses (it is backed by localStorage on web).
+ * Returns undefined when sync access is unavailable (native, SSR or blocked storage) so callers fall back to loadSession().
+ */
+export function loadSessionSync(): User | null | undefined {
+  if (Platform.OS !== 'web' || typeof window === 'undefined') return undefined;
+  let saved: string | null;
+  try {
+    saved = window.localStorage.getItem(SESSION_KEY);
+  } catch {
+    return undefined;
+  }
+  try {
+    return saved === null ? null : JSON.parse(saved);
+  } catch {
+    return null;
+  }
 }
 
 export function saveSession(user: User): Promise<void> {

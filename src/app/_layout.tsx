@@ -11,6 +11,7 @@ import { theme } from '@/constants/theme';
 import { SessionProvider, useSession } from '@/context/SessionContext';
 import { TaskDraftProvider } from '@/context/TaskDraftContext';
 import { useReminderNavigation } from '@/notifications/useReminderNavigation';
+import { removeWebShell } from '@/utils/webShell';
 
 void SplashScreen.preventAutoHideAsync();
 
@@ -34,7 +35,10 @@ function RootNavigator() {
   useReminderNavigation(!loading && signedIn);
 
   useEffect(() => {
-    if (!loading) SplashScreen.hide();
+    if (!loading) {
+      SplashScreen.hide();
+      removeWebShell();
+    }
   }, [loading]);
 
   if (loading) return null;

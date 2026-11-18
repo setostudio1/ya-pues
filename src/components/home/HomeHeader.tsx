@@ -32,7 +32,7 @@ export default function HomeHeader({ name, onSignOut }: Props) {
           <Text style={styles.question}>¿Qué tienes que hacer hoy?</Text>
         </View>
         <Image source={require('@/assets/images/home/mascot.png')}
-          contentFit="contain" accessible={false} style={styles.mascot} />
+          contentFit="contain" accessible={false} accessibilityLabel="" priority="high" loading="eager" style={styles.mascot} />
       </View>
     </View>
   );
