@@ -10,7 +10,7 @@ type Props = {
   style?: StyleProp<ViewStyle>;
 };
 
-const FLASH_FIRST = require('@/assets/images/streak/flash-first.svg');
+const FLASH_FIRST = require('@/assets/images/streak/flash-small.svg');
 const FLASH = require('@/assets/images/streak/flash.svg');
 const FLASH_SMALL = require('@/assets/images/streak/flash-small.svg');
 
@@ -46,7 +46,7 @@ export default function WeeklyStreak({ progress, style }: Props) {
                 <View style={[styles.track, completed && styles.activeTrack, start && styles.runStart, end && styles.runEnd]}>
                   <View style={[styles.circle, isToday && styles.todayCircle, completed && styles.completedCircle]}>
                     {completed && <Image source={index === 0 ? FLASH_FIRST : FLASH}
-                      contentFit="contain" accessible={false} style={styles.flash} />}
+                      contentFit="contain" accessible={false} accessibilityLabel="" style={styles.flash} />}
                   </View>
                 </View>
               </View>
@@ -54,7 +54,7 @@ export default function WeeklyStreak({ progress, style }: Props) {
           })}
         </View>
         <View style={styles.summary}>
-          <Image source={FLASH_SMALL} contentFit="contain" accessible={false} style={styles.summaryFlash} />
+          <Image source={FLASH_SMALL} contentFit="contain" accessible={false} accessibilityLabel="" style={styles.summaryFlash} />
           <Text style={styles.summaryText}>
             {progress.streak > 0
               ? `${progress.streak} ${progress.streak === 1 ? 'día' : 'días'} cumpliendo tus tareas`

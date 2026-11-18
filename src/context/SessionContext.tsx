@@ -1,6 +1,6 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 
-import { clearSession, loadSession, saveSession } from '@/storage/accounts';
+import { clearSession, loadSession, loadSessionSync, saveSession } from '@/storage/accounts';
 import type { User } from '@/types/auth';
 
 type SessionContextValue = {
@@ -15,8 +15,22 @@ const SessionContext = createContext<SessionContextValue | null>(null);
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const resolvedSync = useRef(false);
+
+  // Web: resolve the session before the first paint. A layout effect (not initial state)
+  // keeps the hydrated tree identical to the static HTML, avoiding a hydration mismatch.
+  useLayoutEffect(() => {
+    const savedUser = loadSessionSync();
+    if (savedUser === undefined) return;
+    resolvedSync.current = true;
+    // Intentional: one synchronous pre-paint update with a client-only value (no async storage tick).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setUser(savedUser);
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
+    if (resolvedSync.current) return;
     let active = true;
     loadSession()
       .then((savedUser) => { if (active) setUser(savedUser); })
