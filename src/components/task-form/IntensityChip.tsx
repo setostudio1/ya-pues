@@ -8,7 +8,7 @@ export default function IntensityChip({ intensity, selected, onPress }: {
   intensity: Intensity; selected: boolean; onPress: () => void;
 }) {
   return (
-    <Pressable accessibilityRole="radio" accessibilityState={{ checked: selected }} onPress={onPress}
+    <Pressable accessibilityRole="radio" accessibilityState={{ checked: selected }} aria-checked={selected} onPress={onPress}
       style={({ pressed }) => [styles.chip, selected && styles.selected, pressed && styles.pressed]}>
       <View style={[styles.dot, { backgroundColor: INTENSITY_COLORS[intensity] }]} />
       <Text style={[styles.label, selected && styles.selectedLabel]}>{INTENSITY_LABELS[intensity]}</Text>

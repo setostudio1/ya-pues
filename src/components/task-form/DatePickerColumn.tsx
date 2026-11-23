@@ -79,6 +79,7 @@ export default function DatePickerColumn({ items, initialIndex = 0, value, label
   return (
     <View style={styles.wrapper} accessible accessibilityRole="adjustable" accessibilityLabel={label}
       accessibilityValue={{ min: 1, max: items.length, now: selectedIndex + 1, text: items[selectedIndex] }}
+      aria-valuemin={1} aria-valuemax={items.length} aria-valuenow={selectedIndex + 1} aria-valuetext={items[selectedIndex]}
       accessibilityActions={[{ name: 'increment', label: 'Siguiente' }, { name: 'decrement', label: 'Anterior' }]}
       onAccessibilityAction={(event) => selectIndex(selectedIndex + (event.nativeEvent.actionName === 'increment' ? 1 : -1))}>
       <View pointerEvents="none" style={styles.selectedBox} />

@@ -6,7 +6,7 @@ export default function OptionCard({ label, selected, onPress }: {
   label: string; selected: boolean; onPress: () => void;
 }) {
   return (
-    <Pressable accessibilityRole="radio" accessibilityState={{ checked: selected }} onPress={onPress}
+    <Pressable accessibilityRole="radio" accessibilityState={{ checked: selected }} aria-checked={selected} onPress={onPress}
       style={({ pressed }) => [styles.option, selected && styles.selected, pressed && styles.pressed]}>
       <Text style={[styles.label, selected && styles.selectedLabel]}>{label}</Text>
     </Pressable>
