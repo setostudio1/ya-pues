@@ -17,7 +17,7 @@ export default function ReminderPreviewList() {
           <Link key={variant} href={{ pathname: route, params: { preview: '1' } }} asChild>
             <Pressable accessibilityRole="button" accessibilityLabel={`Ver ${label}`} style={styles.card}>
               <View style={styles.thumbnail}>
-                <ReminderArtwork variant={variant} />
+                <ReminderArtwork variant={variant} thumbnail />
               </View>
               <View style={styles.copy}>
                 <Text style={styles.title}>{label}</Text>

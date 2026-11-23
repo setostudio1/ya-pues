@@ -14,8 +14,9 @@ export default function StreakHero({ progress }: {
     <View style={styles.hero}>
       <View pointerEvents="none" style={styles.illustration}>
         <Image source={RING}
-          contentFit="contain" accessible={false} style={styles.ring} />
-        <Image source={MASCOT} contentFit="contain" accessible={false} style={StyleSheet.absoluteFill} />
+          contentFit="contain" accessible={false} accessibilityLabel="" style={styles.ring} />
+        <Image source={MASCOT} contentFit="contain" accessible={false} accessibilityLabel=""
+          priority="high" loading="eager" style={StyleSheet.absoluteFill} />
       </View>
       <View style={styles.counter}>
         <Text accessibilityRole="header" accessibilityLabel={`${progress.streak} ${progress.streak === 1 ? 'día' : 'días'} de racha actual`}
