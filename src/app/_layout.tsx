@@ -10,6 +10,7 @@ import { ROUTES } from '@/constants/routes';
 import { theme } from '@/constants/theme';
 import { SessionProvider, useSession } from '@/context/SessionContext';
 import { TaskDraftProvider } from '@/context/TaskDraftContext';
+import { useTaskCalendarSync } from '@/hooks/useTaskCalendarSync';
 import { useReminderNavigation } from '@/notifications/useReminderNavigation';
 import { removeWebShell } from '@/utils/webShell';
 
@@ -33,6 +34,7 @@ function RootNavigator() {
   const signedIn = user !== null;
 
   useReminderNavigation(!loading && signedIn);
+  useTaskCalendarSync(!loading ? user?.id : undefined);
 
   useEffect(() => {
     if (!loading) {

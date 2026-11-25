@@ -22,6 +22,8 @@ export default function SetTaskScreen() {
 
   return (
     <SetTask value={draft.title} intensity={draft.intensity} error={error} onContinue={continueToProof}
+      description={draft.description} onDescriptionChange={(description) => updateDraft({ description })}
+      calendar={draft.calendar} onCalendarChange={(calendar) => updateDraft({ calendar })}
       onChange={(title) => { updateDraft({ title }); setError(''); }}
       onIntensityChange={(intensity) => updateDraft({ intensity })} />
   );

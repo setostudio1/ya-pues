@@ -6,9 +6,11 @@ import FillForm from '@/components/task-form/FillForm';
 import SetIntensity from '@/components/task-form/SetIntensity';
 import StepLabel from '@/components/task-form/StepLabel';
 import TimeSelector from '@/components/task-form/TimeSelector';
+import TaskCalendarPicker from '@/components/task-form/TaskCalendarPicker';
 import BackButton from '@/components/ui/BackButton';
 import Button from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/DataState';
+import InputField from '@/components/ui/InputField';
 import Screen from '@/components/ui/Screen';
 import { theme } from '@/constants/theme';
 import type { Task, TaskUpdate } from '@/types/tasks';
@@ -23,6 +25,8 @@ type Props = {
 
 export default function EditTask({ task, isOverdue, busy, error, onSave }: Props) {
   const [title, setTitle] = useState(task.title);
+  const [description, setDescription] = useState(task.description ?? '');
+  const [calendar, setCalendar] = useState(task.calendar);
   const [dueDate, setDueDate] = useState(task.dueDate);
   const [dueTime, setDueTime] = useState(task.dueTime);
   const [intensity, setIntensity] = useState(task.intensity);
@@ -38,6 +42,8 @@ export default function EditTask({ task, isOverdue, busy, error, onSave }: Props
       <View style={styles.section}>
         <Text style={styles.label}>La tarea</Text>
         <FillForm value={title} onChangeText={setTitle} />
+        <InputField label="Descripción (opcional)" value={description} onChangeText={setDescription}
+          placeholder="Añade detalles de tu tarea" multiline maxLength={2000} editable={!busy} />
         <SetIntensity selected={intensity} onSelect={setIntensity} />
       </View>
 
@@ -51,9 +57,10 @@ export default function EditTask({ task, isOverdue, busy, error, onSave }: Props
         <TimeSelector value={dueTime} onChange={setDueTime} />
       </View>
 
+      <TaskCalendarPicker value={calendar} onChange={setCalendar} disabled={busy} />
       {!!error && <ErrorState message={error} />}
       <Button label={busy ? 'Guardando…' : 'Guardar cambios'} disabled={busy} accessibilityState={{ busy }}
-        onPress={() => onSave({ title: title.trim(), dueDate, dueTime, intensity })} />
+        onPress={() => onSave({ title: title.trim(), description: description.trim(), calendar, dueDate, dueTime, intensity })} />
     </Screen>
   );
 }

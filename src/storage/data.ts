@@ -1,5 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { publishCalendarSyncStatus } from '@/calendar/syncStatus';
+import { syncSavedCalendars } from '@/calendar/syncTaskCalendars';
+import type { StoredTask } from '@/types/calendar';
 import type { Task, TaskCompletion, TaskDraft, TaskUpdate } from '@/types/tasks';
 import { buildTask, createId, TaskValidationError, today } from '@/utils/tasks';
 
@@ -20,15 +23,25 @@ async function readList<T>(key: string): Promise<T[]> {
 }
 
 export async function loadTasks(userId?: string): Promise<Task[]> {
-  const tasks = await readList<Task>(TASKS_KEY);
+  const tasks = (await readList<StoredTask>(TASKS_KEY)).filter((task) => !task.calendarDeletedAt);
   const visible = userId === undefined
     ? tasks
     : tasks.filter((task) => task.ownerId === undefined || task.ownerId === userId);
   return visible.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
-async function saveTasks(tasks: Task[]): Promise<void> {
+async function saveTasks(tasks: StoredTask[]): Promise<void> {
   await AsyncStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
+}
+
+export function syncTaskCalendars(ownerId?: string): Promise<void> {
+  return enqueueWrite(async () => {
+    try {
+      await syncSavedCalendars(await readList<StoredTask>(TASKS_KEY), ownerId, saveTasks);
+    } catch {
+      publishCalendarSyncStatus('No pudimos leer los vínculos del calendario. Vuelve a intentar.');
+    }
+  });
 }
 
 export function loadCompletions(): Promise<TaskCompletion[]> {
@@ -41,7 +54,7 @@ async function saveCompletions(completions: TaskCompletion[]): Promise<void> {
 
 export function addTask(draft: TaskDraft, ownerId?: string): Promise<Task> {
   return enqueueWrite(async () => {
-    const tasks = await loadTasks();
+    const tasks = await readList<StoredTask>(TASKS_KEY);
     const existing = tasks.find((task) => task.id === draft.id);
     if (existing) {
       return existing;
@@ -49,6 +62,7 @@ export function addTask(draft: TaskDraft, ownerId?: string): Promise<Task> {
 
     const task: Task = { ...buildTask(draft), ownerId };
     await saveTasks([task, ...tasks]);
+    await syncSavedCalendars([task, ...tasks], ownerId, saveTasks);
     return task;
   });
 }
@@ -71,8 +85,8 @@ export function recordCompletion(taskId: string): Promise<void> {
 
 export function updateTask(taskId: string, changes: TaskUpdate): Promise<Task> {
   return enqueueWrite(async () => {
-    const [tasks, completions] = await Promise.all([loadTasks(), loadCompletions()]);
-    const existing = tasks.find((task) => task.id === taskId);
+    const [tasks, completions] = await Promise.all([readList<StoredTask>(TASKS_KEY), loadCompletions()]);
+    const existing = tasks.find((task) => task.id === taskId && !task.calendarDeletedAt);
     if (!existing) {
       throw new TaskValidationError('No se encontró esta tarea.');
     }
@@ -80,19 +94,27 @@ export function updateTask(taskId: string, changes: TaskUpdate): Promise<Task> {
       throw new TaskValidationError('Una tarea completada no se puede editar.');
     }
 
-    const updated: Task = { ...buildTask({ ...existing, ...changes }), createdAt: existing.createdAt };
-    await saveTasks(tasks.map((task) => (task.id === taskId ? updated : task)));
+    const updated: StoredTask = { ...existing, ...buildTask({ ...existing, ...changes }), createdAt: existing.createdAt };
+    const next = tasks.map((task) => (task.id === taskId ? updated : task));
+    await saveTasks(next);
+    await syncSavedCalendars(next, existing.ownerId, saveTasks);
     return updated;
   });
 }
 
 export function deleteTask(taskId: string): Promise<void> {
   return enqueueWrite(async () => {
-    const [tasks, completions] = await Promise.all([loadTasks(), loadCompletions()]);
+    const [tasks, completions] = await Promise.all([readList<StoredTask>(TASKS_KEY), loadCompletions()]);
+    const existing = tasks.find((task) => task.id === taskId);
     const isCompleted = completions.some((entry) => entry.taskId === taskId);
-    const remaining = isCompleted
-      ? tasks.map((task) => (task.id === taskId ? { ...task, archivedAt: new Date().toISOString() } : task))
-      : tasks.filter((task) => task.id !== taskId);
+    const remaining = tasks.flatMap((task) => {
+      if (task.id !== taskId) return [task];
+      if (isCompleted) return [{ ...task, calendar: undefined, archivedAt: new Date().toISOString() }];
+      // Retain a hidden tombstone until the linked event can be removed, even
+      // when permissions were revoked or the provider is temporarily unavailable.
+      return task.calendarSync ? [{ ...task, calendarDeletedAt: new Date().toISOString() }] : [];
+    });
     await saveTasks(remaining);
+    await syncSavedCalendars(remaining, existing?.ownerId, saveTasks);
   });
 }
