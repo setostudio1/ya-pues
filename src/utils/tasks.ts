@@ -74,6 +74,7 @@ export function buildTask(draft: TaskDraft, now = new Date()): Task {
   return {
     ...draft, ...(companions === undefined ? {} : { companions }),
     title: draft.title.trim(), signedBy: draft.signedBy.trim(),
+    description: draft.description?.trim(),
     signatureImageUri: draft.signatureMode === 'image' ? draft.signatureImageUri.trim() : '',
     createdAt: now.toISOString(),
   };

@@ -10,7 +10,10 @@ npm install
 npx expo start
 ```
 
-Abre la app en el celular con **Expo Go (SDK 58)**. En el navegador (`npx expo start --web`) los avisos
+Para probar la integración con el calendario usa una **compilación de desarrollo o instalada (SDK 58)**;
+`expo-calendar` 58 no está disponible en Expo Go. Puedes generar una compilación con
+`npx eas-cli@latest build --profile preview --platform android` (o `ios`).
+En el navegador (`npx expo start --web`) los avisos
 se muestran como un banner dentro de la app, con sonido y vibración si el dispositivo lo permite.
 Si cambiaste de versión o de rama, usa `npx expo start --clear`.
 
@@ -44,6 +47,7 @@ src/
 ├── context/             Estado compartido: sesión y tarea en creación.
 ├── hooks/               Cargar tareas, completarlas o borrarlas, cerrar sesión y reprogramar avisos.
 ├── notifications/       Permisos, avisos por tarea y simulador de avisos para la web.
+├── calendar/            Permisos de calendario y sincronización de eventos vinculados.
 ├── storage/             Guardar y leer con AsyncStorage: tareas, cuentas y preferencias.
 ├── styles/              CSS para la web.
 ├── types/               Tipos de TypeScript.
@@ -72,3 +76,44 @@ Todas las rutas se crearon en `78dc917` (SETO Studio); después cada integrante 
 | Barra inferior y botón | — | BottomNav con botón + (`515dc82`, PR #11) | Animación y háptica del botón (PR #16) |
 
 Usar la cámara queda pendiente para una siguiente versión.
+
+## Calendario del dispositivo — Issue #45
+
+En «La tarea», la descripción y «Añadir al calendario» son opcionales y no añaden un paso.
+Al activar la opción se solicita acceso al calendario y se muestran únicamente calendarios de
+eventos que permiten escritura. Se necesita acceso completo en iOS para elegir el calendario y
+actualizar o eliminar eventos; no se solicitan permisos de recordatorios del sistema.
+
+El evento usa el título y la descripción, y reserva los 30 minutos que terminan en la fecha y hora
+límite local de la tarea. No añade alarmas: los avisos de Ya Pues mantienen su flujo actual.
+La vinculación es de Ya Pues hacia el calendario; los cambios hechos directamente en la app de
+calendario no editan la tarea.
+
+Al editar una tarea se actualiza el mismo evento. También se puede cambiar de calendario o
+desactivar la opción para eliminar el evento al guardar. Al eliminar una tarea (incluidas las
+completadas que se archivan) se elimina su evento y se conserva el historial de completaciones.
+
+La tarea se guarda antes de sincronizar. Si se revocan los permisos o falla el proveedor, los
+cambios quedan pendientes, se muestra un aviso en Inicio y se puede reintentar. También se
+reintentan al iniciar sesión y al volver a la app. Las eliminaciones pendientes conservan un
+registro oculto hasta retirar el evento. Un identificador de tarea en las notas permite recuperar
+una creación interrumpida sin duplicarla. Los vínculos pertenecen al almacenamiento local de esta
+instalación y respetan el usuario de cada tarea.
+
+En web la opción aparece desactivada con una explicación; crear, editar y eliminar tareas sigue
+disponible. Para verificar permisos y eventos reales hay que probar en dispositivos Android e iOS
+con una compilación que incluya el nuevo módulo nativo. Un OTA no agrega el módulo por sí solo.
+
+Validación automatizada:
+
+```sh
+npx expo lint
+npx tsc --noEmit
+npm run test:calendar
+```
+
+Revisión en dispositivo: crear con y sin vínculo; permitir/rechazar permisos; elegir entre varios
+calendarios; editar título, descripción y plazo; cambiar de calendario; desactivar el vínculo;
+eliminar tareas pendientes y completadas; revocar permisos, editar o eliminar, volver a otorgarlos
+y reabrir la app. Confirmar que solo queda un evento por tarea y que los avisos, evidencias,
+firma y racha conservan su comportamiento.

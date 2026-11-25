@@ -25,6 +25,13 @@
     },
     "plugins": [
       [
+        "expo-calendar",
+        {
+          "calendarPermission": "Ya Pues necesita acceder a tus calendarios para que elijas uno y mantener actualizados los eventos de las tareas que vincules.",
+          "remindersPermission": false
+        }
+      ],
+      [
         "expo-router",
         {
           "asyncRoutes": {

@@ -3,6 +3,7 @@ import { FlatList, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import HomeReminders from '@/components/home/HomeReminders';
+import CalendarSyncStatus from '@/components/home/CalendarSyncStatus';
 import TaskCard from '@/components/home/TaskCard';
 import WeeklyStreak from '@/components/home/WeeklyStreak';
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/DataState';
@@ -49,6 +50,7 @@ export default function HomeTaskList({
       ListHeaderComponent={
         <View style={styles.section}>
           {header}
+          <CalendarSyncStatus />
           {ready && <WeeklyStreak progress={calculateProgress(allTasks, completions)} />}
           <Text accessibilityRole="header" style={styles.heading}>Cronograma</Text>
           {loading && <LoadingState />}

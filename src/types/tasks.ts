@@ -1,3 +1,5 @@
+import type { TaskCalendar } from '@/types/calendar';
+
 export type Intensity = 'low' | 'medium' | 'high';
 export type ProofType = 'photo' | 'video' | 'timelapse';
 export type SignatureMode = 'signature' | 'image';
@@ -10,6 +12,8 @@ export type TaskCompanion = {
 export type Task = {
   id: string;
   title: string;
+  description?: string;
+  calendar?: TaskCalendar;
   dueDate: string;
   dueTime: string;
   intensity: Intensity;
@@ -25,7 +29,7 @@ export type Task = {
 
 export type TaskDraft = Omit<Task, 'createdAt' | 'ownerId' | 'archivedAt'>;
 
-export type TaskUpdate = Pick<TaskDraft, 'title' | 'dueDate' | 'dueTime' | 'intensity'>;
+export type TaskUpdate = Pick<TaskDraft, 'title' | 'description' | 'calendar' | 'dueDate' | 'dueTime' | 'intensity'>;
 
 export type TaskStatus = 'pending' | 'overdue' | 'completed' | 'completedLate';
 
