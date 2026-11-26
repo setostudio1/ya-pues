@@ -3,6 +3,7 @@ import type { TaskCalendar } from '@/types/calendar';
 export type Intensity = 'low' | 'medium' | 'high';
 export type ProofType = 'photo' | 'video' | 'timelapse';
 export type SignatureMode = 'signature' | 'image';
+export type AdvanceReminder = { kind: 'none' | 'five' | 'ten' } | { kind: 'days'; days: number };
 
 export type TaskCompanion = {
   email: string;
@@ -16,6 +17,7 @@ export type Task = {
   calendar?: TaskCalendar;
   dueDate: string;
   dueTime: string;
+  advanceReminder?: AdvanceReminder;
   intensity: Intensity;
   proofType: ProofType;
   signedBy: string;
@@ -29,7 +31,7 @@ export type Task = {
 
 export type TaskDraft = Omit<Task, 'createdAt' | 'ownerId' | 'archivedAt'>;
 
-export type TaskUpdate = Pick<TaskDraft, 'title' | 'description' | 'calendar' | 'dueDate' | 'dueTime' | 'intensity'>;
+export type TaskUpdate = Pick<TaskDraft, 'title' | 'description' | 'calendar' | 'dueDate' | 'dueTime' | 'intensity' | 'advanceReminder'>;
 
 export type TaskStatus = 'pending' | 'overdue' | 'completed' | 'completedLate';
 

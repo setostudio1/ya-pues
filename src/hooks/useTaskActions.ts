@@ -15,8 +15,9 @@ export function useTaskActions(onChanged: () => Promise<void>) {
     setSaveError('');
     try {
       await action();
-      await cancelTaskReminders(taskId).catch(() => undefined);
+      const cancelled = await cancelTaskReminders(taskId).then(() => true, () => false);
       await onChanged();
+      if (!cancelled) setSaveError('Guardamos el cambio, pero no pudimos cancelar todos los avisos de la tarea.');
     } catch {
       setSaveError(errorMessage);
     } finally {

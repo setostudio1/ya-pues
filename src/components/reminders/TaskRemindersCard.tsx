@@ -67,7 +67,7 @@ export default function TaskRemindersCard() {
       </View>
       <Text style={styles.text}>
         {isEnabled
-          ? 'Cada tarea avisa 24 horas, 2 horas, 45 minutos y 15 minutos antes del plazo.'
+          ? 'Las tareas nuevas avisan a la hora límite. Puedes añadir un aviso anticipado al crear o editar una tarea.'
           : 'Los avisos de tareas están apagados.'}
       </Text>
       <Button label="Probar aviso en 10 segundos" variant="secondary" onPress={() => { void handleTest(); }} />

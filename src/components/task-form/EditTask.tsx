@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import AdvanceReminderPicker from '@/components/task-form/AdvanceReminderPicker';
 import DateWheels from '@/components/task-form/DateWheels';
 import FillForm from '@/components/task-form/FillForm';
 import SetIntensity from '@/components/task-form/SetIntensity';
@@ -13,7 +14,7 @@ import { ErrorState } from '@/components/ui/DataState';
 import InputField from '@/components/ui/InputField';
 import Screen from '@/components/ui/Screen';
 import { theme } from '@/constants/theme';
-import type { Task, TaskUpdate } from '@/types/tasks';
+import type { AdvanceReminder, Task, TaskUpdate } from '@/types/tasks';
 
 type Props = {
   task: Task;
@@ -29,6 +30,7 @@ export default function EditTask({ task, isOverdue, busy, error, onSave }: Props
   const [calendar, setCalendar] = useState(task.calendar);
   const [dueDate, setDueDate] = useState(task.dueDate);
   const [dueTime, setDueTime] = useState(task.dueTime);
+  const [advanceReminder, setAdvanceReminder] = useState<AdvanceReminder>(task.advanceReminder ?? { kind: 'none' });
   const [intensity, setIntensity] = useState(task.intensity);
 
   return (
@@ -57,10 +59,11 @@ export default function EditTask({ task, isOverdue, busy, error, onSave }: Props
         <TimeSelector value={dueTime} onChange={setDueTime} />
       </View>
 
+      <AdvanceReminderPicker value={advanceReminder} onChange={setAdvanceReminder} disabled={busy} />
       <TaskCalendarPicker value={calendar} onChange={setCalendar} disabled={busy} />
       {!!error && <ErrorState message={error} />}
       <Button label={busy ? 'Guardando…' : 'Guardar cambios'} disabled={busy} accessibilityState={{ busy }}
-        onPress={() => onSave({ title: title.trim(), description: description.trim(), calendar, dueDate, dueTime, intensity })} />
+        onPress={() => onSave({ title: title.trim(), description: description.trim(), calendar, dueDate, dueTime, intensity, advanceReminder })} />
     </Screen>
   );
 }

@@ -10,11 +10,19 @@ import { loadCompletions, loadTasks } from '@/storage/data';
 import { loadTaskRemindersEnabled } from '@/storage/preferences';
 import type { ReminderResult, ReminderRoute, ReminderVariant } from '@/types/reminders';
 import type { Task, TaskCompletion } from '@/types/tasks';
-import { taskDueTime } from '@/utils/tasks';
+import { advanceReminderTime, taskDueTime } from '@/utils/tasks';
 
 const CHANNEL_ID = 'default';
 const TEST_ID = 'test-reminder';
 const MINUTE = 60 * 1000;
+const TASK_NOTICE_IDS = ['due', 'advance'] as const;
+let reminderQueue: Promise<unknown> = Promise.resolve();
+
+function enqueueReminderChange<T>(change: () => Promise<T>): Promise<T> {
+  const result = reminderQueue.then(change);
+  reminderQueue = result.catch(() => undefined);
+  return result;
+}
 
 export function isReminderRoute(value: unknown): value is ReminderRoute {
   return REMINDER_VARIANTS.some((variant) => REMINDERS[variant].route === value);
@@ -27,15 +35,28 @@ export async function hasNotificationPermission(): Promise<boolean> {
     return true;
   }
   const current = await Notifications.getPermissionsAsync();
-  return current.granted;
+  if (!current.granted) return false;
+  if (Platform.OS !== 'android') return true;
+  const channel = await Notifications.getNotificationChannelAsync(CHANNEL_ID);
+  // eslint-disable-next-line import/namespace -- AndroidImportance is re-exported with `export *`.
+  return channel?.importance !== Notifications.AndroidImportance.NONE;
 }
 
 export async function requestReminderPermission(): Promise<boolean> {
-  return isWeb || askNotificationPermission();
+  return isWeb || ((await askNotificationPermission()) && (await hasNotificationPermission()));
 }
 
-async function canScheduleTaskReminders(): Promise<boolean> {
-  return (await hasNotificationPermission()) && (await loadTaskRemindersEnabled());
+export async function taskReminderAvailability(): Promise<'enabled' | 'disabled' | 'denied'> {
+  if (!(await loadTaskRemindersEnabled())) return 'disabled';
+  return (await hasNotificationPermission()) ? 'enabled' : 'denied';
+}
+
+export async function hasExactReminderPermission(): Promise<boolean> {
+  return Platform.OS !== 'android' || (await Notifications.getExactAlarmPermissionsAsync()).granted;
+}
+
+export async function requestExactReminderPermission(): Promise<void> {
+  if (Platform.OS === 'android') await Notifications.requestExactAlarmPermissionsAsync();
 }
 
 function reminderId(taskId: string, variant: ReminderVariant) {
@@ -79,6 +100,20 @@ async function pendingReminderIds(): Promise<Set<string>> {
 }
 
 async function scheduleMissingReminders(task: Task, pendingIds: Set<string>) {
+  if (task.advanceReminder !== undefined) {
+    const times = { due: taskDueTime(task), advance: advanceReminderTime(task) };
+    for (const notice of TASK_NOTICE_IDS) {
+      const id = `${task.id}/${notice}`;
+      const time = times[notice];
+      if (time === undefined || !(time > Date.now()) || pendingIds.has(id)) continue;
+      const variant = notice === 'due' ? 'personal' : 'initial';
+      const label = notice === 'due' ? 'Hora límite' : 'Aviso anticipado';
+      await scheduleAt(id, time, `${label}: ${task.title}`, variant, {
+        route: REMINDERS[variant].route, taskId: task.id,
+      });
+    }
+    return;
+  }
   for (const variant of REMINDER_VARIANTS) {
     const id = reminderId(task.id, variant);
     const time = reminderTime(task, variant);
@@ -89,30 +124,39 @@ async function scheduleMissingReminders(task: Task, pendingIds: Set<string>) {
   }
 }
 
-export async function scheduleTaskReminders(task: Task): Promise<void> {
-  if (await canScheduleTaskReminders()) {
-    await scheduleMissingReminders(task, new Set());
-  }
+export function scheduleTaskReminders(task: Task, { replace = false } = {}): Promise<void> {
+  return enqueueReminderChange(async () => {
+    if (replace) await cancelTaskReminderIds(task.id);
+    if ((await taskReminderAvailability()) === 'enabled') {
+      await scheduleMissingReminders(task, await pendingReminderIds());
+    }
+  });
 }
 
 export async function scheduleSavedTaskReminders(taskId: string): Promise<void> {
-  const task = (await loadTasks()).find((entry) => entry.id === taskId);
-  if (task) {
-    await scheduleTaskReminders(task);
-  }
+  await enqueueReminderChange(async () => {
+    if ((await taskReminderAvailability()) !== 'enabled') return;
+    const [tasks, completions] = await Promise.all([loadTasks(), loadCompletions()]);
+    const task = tasks.find((entry) => entry.id === taskId);
+    if (task && !completions.some((entry) => entry.taskId === taskId)) {
+      await scheduleMissingReminders(task, await pendingReminderIds());
+    }
+  });
 }
 
 export async function syncTaskReminders(tasks: Task[], completions: TaskCompletion[]): Promise<void> {
-  if (!(await canScheduleTaskReminders())) {
-    return;
-  }
-  const pendingIds = await pendingReminderIds();
-  const completedIds = new Set(completions.map((entry) => entry.taskId));
-  for (const task of tasks) {
-    if (!completedIds.has(task.id)) {
-      await scheduleMissingReminders(task, pendingIds);
+  await enqueueReminderChange(async () => {
+    if ((await taskReminderAvailability()) !== 'enabled') return;
+    const pendingIds = await pendingReminderIds();
+    const visibleIds = new Set(tasks.map((task) => task.id));
+    const [savedTasks, savedCompletions] = await Promise.all([loadTasks(), loadCompletions()]);
+    const completedIds = new Set([...completions, ...savedCompletions].map((entry) => entry.taskId));
+    for (const task of savedTasks) {
+      if (visibleIds.has(task.id) && !completedIds.has(task.id)) {
+        await scheduleMissingReminders(task, pendingIds);
+      }
     }
-  }
+  });
 }
 
 export async function syncSavedTaskReminders(userId?: string): Promise<void> {
@@ -120,13 +164,25 @@ export async function syncSavedTaskReminders(userId?: string): Promise<void> {
   await syncTaskReminders(tasks, completions);
 }
 
-export async function cancelTaskReminders(taskId: string): Promise<void> {
-  for (const variant of REMINDER_VARIANTS) {
-    await cancelById(reminderId(taskId, variant));
-  }
+async function cancelTaskReminderIds(taskId: string): Promise<void> {
+  const ids = [
+    ...REMINDER_VARIANTS.map((variant) => reminderId(taskId, variant)),
+    ...TASK_NOTICE_IDS.map((notice) => `${taskId}/${notice}`),
+  ];
+  const results = await Promise.allSettled(ids.map(cancelById));
+  const failure = results.find((result) => result.status === 'rejected');
+  if (failure) throw failure.reason;
 }
 
-export async function cancelAllTaskReminders(): Promise<void> {
+export function cancelTaskReminders(taskId: string): Promise<void> {
+  return enqueueReminderChange(() => cancelTaskReminderIds(taskId));
+}
+
+export function cancelAllTaskReminders(): Promise<void> {
+  return enqueueReminderChange(cancelAllTaskReminderIds);
+}
+
+async function cancelAllTaskReminderIds(): Promise<void> {
   if (isWeb) {
     cancelWebTaskNotifications();
     return;

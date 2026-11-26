@@ -7,7 +7,7 @@ import { ErrorState, LoadingState } from '@/components/ui/DataState';
 import Screen from '@/components/ui/Screen';
 import { ROUTES } from '@/constants/routes';
 import { useStoredTasks } from '@/hooks/useStoredTasks';
-import { cancelTaskReminders, scheduleTaskReminders } from '@/notifications/taskReminders';
+import { scheduleTaskReminders } from '@/notifications/taskReminders';
 import { updateTask } from '@/storage/data';
 import type { TaskUpdate } from '@/types/tasks';
 import { getTaskStatus, TaskValidationError } from '@/utils/tasks';
@@ -29,8 +29,12 @@ export default function EditTaskScreen() {
     setSaveError('');
     try {
       const updated = await updateTask(id, changes);
-      await cancelTaskReminders(id).catch(() => undefined);
-      await scheduleTaskReminders(updated).catch(() => undefined);
+      try {
+        await scheduleTaskReminders(updated, { replace: true });
+      } catch {
+        setSaveError('Guardamos los cambios, pero no pudimos actualizar los avisos. Intenta guardar de nuevo.');
+        return;
+      }
       if (router.canGoBack()) router.back();
       else router.replace(ROUTES.home);
     } catch (cause) {

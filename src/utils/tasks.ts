@@ -3,6 +3,9 @@ import type { Task, TaskCompletion, TaskDraft, TaskStatus } from '@/types/tasks'
 import { normalizeTaskCompanions } from '@/utils/companions';
 
 export class TaskValidationError extends Error {}
+export class ExpiredAdvanceReminderError extends TaskValidationError {}
+
+export const EXPIRED_ADVANCE_REMINDER = 'La hora del aviso anticipado ya pasó. Elige otra opción o continúa solo con el aviso a la hora exacta.';
 
 export const TITLE_ERROR = `Escribe una tarea de entre ${TITLE_LENGTH.min} y ${TITLE_LENGTH.max} caracteres.`;
 
@@ -35,6 +38,29 @@ export function taskDueTime(task: Pick<Task, 'dueDate' | 'dueTime'>): number {
   return new Date(`${task.dueDate}T${task.dueTime}:00`).getTime();
 }
 
+export function advanceReminderTime(task: Pick<Task, 'dueDate' | 'dueTime' | 'advanceReminder'>): number | undefined {
+  const reminder = task.advanceReminder;
+  if (!reminder || reminder.kind === 'none') return undefined;
+  const due = taskDueTime(task);
+  if (reminder.kind === 'days') {
+    const date = new Date(due);
+    date.setDate(date.getDate() - reminder.days);
+    return date.getTime();
+  }
+  return due - (reminder.kind === 'five' ? 5 : 10) * 60_000;
+}
+
+export function validateAdvanceReminder(task: Pick<Task, 'dueDate' | 'dueTime' | 'advanceReminder'>, now = Date.now()) {
+  const reminder = task.advanceReminder;
+  if (reminder?.kind === 'days' && (!Number.isSafeInteger(reminder.days) || reminder.days < 1)) {
+    throw new TaskValidationError('Ingresa un número entero de días, como mínimo 1.');
+  }
+  const time = advanceReminderTime(task);
+  if (time !== undefined && (!Number.isFinite(time) || time <= now)) {
+    throw new ExpiredAdvanceReminderError(EXPIRED_ADVANCE_REMINDER);
+  }
+}
+
 export function getTaskStatus(task: Task, completion: TaskCompletion | undefined, now = Date.now()): TaskStatus {
   if (completion) {
     return Date.parse(completion.createdAt) > taskDueTime(task) ? 'completedLate' : 'completed';
@@ -48,6 +74,7 @@ export function createTaskDraft(now = new Date()): TaskDraft {
   return {
     id: createId(), title: '', dueDate: today(deadline),
     dueTime: `${String(deadline.getHours()).padStart(2, '0')}:${String(deadline.getMinutes()).padStart(2, '0')}`,
+    advanceReminder: { kind: 'none' },
     intensity: 'low', proofType: 'photo', signedBy: '',
     signatureMode: 'signature', signatureImageUri: '',
     companions: [],
@@ -60,9 +87,10 @@ export function buildTask(draft: TaskDraft, now = new Date()): Task {
   }
   if (!isDateKey(draft.dueDate)) throw new TaskValidationError('Escribe una fecha válida con formato AAAA-MM-DD.');
   if (!isTime(draft.dueTime)) throw new TaskValidationError('Escribe una hora válida con formato HH:MM.');
-  if (new Date(`${draft.dueDate}T${draft.dueTime}:00`).getTime() < now.getTime()) {
+  if (taskDueTime(draft) <= now.getTime()) {
     throw new TaskValidationError('La fecha y hora límite deben estar en el futuro.');
   }
+  validateAdvanceReminder(draft, now.getTime());
   if (draft.signedBy.trim().length < 2 || draft.signedBy.trim().length > 80) {
     throw new TaskValidationError('Escribe tu nombre para confirmar el compromiso.');
   }

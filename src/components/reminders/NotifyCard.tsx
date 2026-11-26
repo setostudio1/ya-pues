@@ -4,10 +4,10 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { theme } from '@/constants/theme';
 import {
-  hasNotificationPermission, requestReminderPermission, scheduleSavedTaskReminders,
+  requestReminderPermission, scheduleSavedTaskReminders, taskReminderAvailability,
 } from '@/notifications/taskReminders';
 
-type Status = 'idle' | 'scheduled' | 'denied';
+type Status = 'checking' | 'idle' | 'scheduled' | 'denied' | 'disabled' | 'error';
 
 type Props = {
   taskId?: string;
@@ -15,55 +15,70 @@ type Props = {
 };
 
 export default function NotifyCard({ taskId, onAnswered }: Props) {
-  const [status, setStatus] = useState<Status>('idle');
+  const [status, setStatus] = useState<Status>('checking');
 
   useEffect(() => {
-    hasNotificationPermission().then((granted) => {
-      if (granted) {
-        setStatus('scheduled');
-        onAnswered();
+    let active = true;
+    async function checkReminders() {
+      try {
+        const availability = await taskReminderAvailability();
+        if (availability === 'enabled' && taskId) await scheduleSavedTaskReminders(taskId);
+        if (!active) return;
+        setStatus(availability === 'enabled' ? 'scheduled' : availability === 'disabled' ? 'disabled' : 'idle');
+        if (availability === 'enabled') onAnswered();
+      } catch {
+        if (active) setStatus('error');
       }
-    });
-  }, [onAnswered]);
+    }
+    void checkReminders();
+    return () => { active = false; };
+  }, [onAnswered, taskId]);
 
   const handlePress = async () => {
-    const allowed = await requestReminderPermission();
-    if (!allowed) {
-      setStatus('denied');
+    setStatus('checking');
+    try {
+      if (!(await requestReminderPermission())) {
+        setStatus('denied');
+        return;
+      }
+      if (taskId) await scheduleSavedTaskReminders(taskId);
+      setStatus('scheduled');
       onAnswered();
-      return;
+    } catch {
+      setStatus('error');
     }
-    if (taskId) {
-      await scheduleSavedTaskReminders(taskId);
-    }
-    setStatus('scheduled');
-    onAnswered();
   };
 
   if (status === 'scheduled') {
     return (
       <View style={styles.card}>
         <Ionicons name="notifications" size={24} color={theme.colors.primary} />
-        <Text style={styles.text}>Listo, te avisaremos antes del plazo.</Text>
+        <Text style={styles.text}>Listo, programamos los avisos de tu tarea.</Text>
       </View>
     );
   }
 
-  if (status === 'denied') {
+  if (status === 'denied' || status === 'disabled' || status === 'error') {
     return (
       <View style={styles.card}>
         <Ionicons name="notifications-off-outline" size={24} color={theme.colors.textMuted} />
-        <Text style={styles.text}>Sin avisos. Puedes activarlos en los ajustes del celular.</Text>
+        <Text style={styles.text}>{status === 'disabled'
+          ? 'Los avisos de tareas están desactivados en Ya Pues.'
+          : status === 'denied'
+            ? 'Activa las notificaciones de Ya Pues en los ajustes del dispositivo.'
+            : 'Guardamos tu tarea, pero no pudimos programar todos sus avisos.'}</Text>
       </View>
     );
   }
+
+  if (status === 'checking') return null;
 
   return (
     <View style={styles.card}>
       <Ionicons name="notifications-outline" size={24} color={theme.colors.primary} />
       <View style={styles.info}>
         <Text style={styles.title}>¿Quieres que te recordemos esta tarea?</Text>
-        <Text style={styles.text}>Te avisamos antes de que venza el plazo.</Text>
+        <Text style={styles.text}>Activa las notificaciones para recibir los avisos que elegiste.</Text>
       </View>
       <Pressable accessibilityRole="button" style={styles.button} onPress={handlePress}>
         <Text style={styles.buttonText}>Avísame</Text>
