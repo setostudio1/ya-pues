@@ -18,10 +18,11 @@ type Props = {
   error?: string;
   onContinue: () => void;
   children: ReactNode;
+  afterCaption?: ReactNode;
 };
 
 export default function TaskStepScreen({
-  step, title, description, caption, buttonLabel = 'Establecer', busy = false, error, onContinue, children,
+  step, title, description, caption, buttonLabel = 'Establecer', busy = false, error, onContinue, children, afterCaption,
 }: Props) {
   return (
     <Screen>
@@ -34,6 +35,7 @@ export default function TaskStepScreen({
           <Text style={styles.hintText}>{caption}</Text>
         </View>
       )}
+      {afterCaption}
       {!!error && <ErrorState message={error} />}
       <Button label={buttonLabel} disabled={busy} accessibilityState={{ busy }} onPress={onContinue} />
     </Screen>

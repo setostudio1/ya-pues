@@ -104,6 +104,15 @@ for (const os of ['ios', 'android']) {
   });
 }
 
+test('advance reminder preferences survive creation, editing and reload', async () => {
+  const h = harness('android');
+  const input = { ...draft(), advanceReminder: { kind: 'days', days: 2 } };
+  await h.data.addTask(input, 'ana');
+  assert.deepEqual((await h.data.loadTasks('ana'))[0].advanceReminder, input.advanceReminder);
+  await h.data.updateTask(input.id, { advanceReminder: { kind: 'none' } });
+  assert.deepEqual((await h.data.loadTasks('ana'))[0].advanceReminder, { kind: 'none' });
+});
+
 test('a permanent permission denial does not prompt again', async () => {
   const h = harness();
   h.deny(false);

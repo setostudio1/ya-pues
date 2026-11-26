@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 import TaskStepScreen from '@/components/task-form/TaskStepScreen';
 import TimeSelector from '@/components/task-form/TimeSelector';
 
@@ -6,12 +8,13 @@ type Props = {
   onChange: (time: string) => void;
   onContinue: () => void;
   error?: string;
+  children: ReactNode;
 };
 
-export default function SetTime({ value, onChange, onContinue, error }: Props) {
+export default function SetTime({ value, onChange, onContinue, error, children }: Props) {
   return (
     <TaskStepScreen step="Paso 2 - Hora Límite" title="¿A qué hora tiene que estar hecha esta tarea?"
-      caption="Para cambiar la hora" onContinue={onContinue} error={error}>
+      caption="Para cambiar la hora" onContinue={onContinue} error={error} afterCaption={children}>
       <TimeSelector value={value} onChange={onChange} />
     </TaskStepScreen>
   );
